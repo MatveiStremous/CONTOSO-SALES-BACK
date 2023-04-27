@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    container_name: 'contoso'
+    ports:
+      - 8081:8081
+    environment:
+      SERVER_PORT: 8081
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql-db:3306/contoso?useUnicode=true&characterEncoding=UTF8"
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: "212109"
+    depends_on:
+      - mysql-db
+    restart: always
+
+
+  mysql-db:
+    image: mysql:8.0
+    container_name: 'java_mysql_contoso'
+    environment:
+      MYSQL_DATABASE: contoso
+      MYSQL_ROOT_PASSWORD: "212109"
+    restart: always
+    volumes:
+      - java_mysql:/var/lib/postgresql/data
+
+volumes:
+  java_mysql:
