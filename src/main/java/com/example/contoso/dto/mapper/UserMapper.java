@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
     public UserResponse toResponseDto(User user) {
         return UserResponse.builder()
+                .id(user.getId())
                 .firstName(user.getName())
                 .lastName(user.getSurname())
                 .login(user.getLogin())

@@ -1,5 +1,6 @@
 package com.example.contoso.dto.request;
 
+import jakarta.validation.constraints.Email;
 import lombok.*;
 
 /**
@@ -16,6 +17,7 @@ import lombok.*;
 public class UserRequest {
     private String firstName;
     private String lastName;
+    @Email(message = "invalid email")
     private String login;
     private String phoneNumber;
     private String password;

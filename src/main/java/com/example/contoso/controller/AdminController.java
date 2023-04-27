@@ -1,13 +1,16 @@
 package com.example.contoso.controller;
 
 import com.example.contoso.dto.request.UserRequest;
+import com.example.contoso.dto.response.UserResponse;
 import com.example.contoso.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Neevels
@@ -20,9 +23,30 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
     private final UserService userService;
 
-    @PostMapping
-    public ResponseEntity<String> register(@RequestBody UserRequest userRequest) {
+    @PostMapping("/registration")
+    public ResponseEntity<String> register(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(bindingResult.getAllErrors()
+                            .get(0)
+                            .getDefaultMessage());
+        }
         userService.registration(userRequest);
-        return ResponseEntity.ok().body("User successfully registered");
+        return ResponseEntity.ok()
+                .body("User successfully registered");
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserResponse>> getAll() {
+        return ResponseEntity
+                .ok()
+                .body(userService.getAllManagers());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteById(@PathVariable Integer id) {
+        userService.deleteById(id);
+        return ResponseEntity.ok("Успешно удален");
     }
 }

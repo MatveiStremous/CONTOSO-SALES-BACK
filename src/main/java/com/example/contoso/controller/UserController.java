@@ -1,13 +1,17 @@
 package com.example.contoso.controller;
 
 import com.example.contoso.dto.request.ChangePasswordRequest;
+import com.example.contoso.dto.request.LoginRequest;
+import com.example.contoso.dto.response.UserResponse;
 import com.example.contoso.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Neevels
@@ -27,4 +31,13 @@ public class UserController {
                 .ok()
                 .body("Password changed");
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserResponse> login(@RequestBody LoginRequest loginRequest) {
+        return ResponseEntity
+                .ok()
+                .body(userService.login(loginRequest));
+    }
+
+
 }
