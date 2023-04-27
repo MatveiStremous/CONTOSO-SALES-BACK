@@ -23,6 +23,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    @Column(unique = true)
     private Integer code;
     private Long reservedAmount;
     private Long freeAmount;
