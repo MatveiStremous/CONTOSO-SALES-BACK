@@ -1,6 +1,6 @@
 package com.example.contoso.service.impl;
 
-import com.example.contoso.Utils.MailSender;
+import com.example.contoso.utils.MailSender;
 import com.example.contoso.dto.mapper.ClientMapper;
 import com.example.contoso.dto.request.ClientRequest;
 import com.example.contoso.dto.response.ClientResponse;
