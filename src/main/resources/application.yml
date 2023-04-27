@@ -13,3 +13,11 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+  mail:
+    host: smtp.yandex.ru
+    username: uw@dru.su
+    password: 12345678
+    port: 465
+    protocol: smtps
+mail:
+  debug: true
