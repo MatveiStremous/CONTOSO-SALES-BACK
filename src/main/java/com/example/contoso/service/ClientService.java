@@ -1,8 +1,8 @@
 package com.example.contoso.service;
 
-import com.example.contoso.dto.request.ClientRequest;
-import com.example.contoso.dto.request.MessageRequest;
-import com.example.contoso.dto.response.ClientResponse;
+import com.example.contoso.dto.request.client.ClientRequest;
+import com.example.contoso.dto.request.client.MessageRequest;
+import com.example.contoso.dto.response.client.ClientResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

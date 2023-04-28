@@ -1,4 +1,4 @@
-package com.example.contoso.dto.request;
+package com.example.contoso.dto.request.client;
 
 import jakarta.validation.constraints.Email;
 import lombok.*;

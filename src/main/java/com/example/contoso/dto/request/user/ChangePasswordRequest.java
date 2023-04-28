@@ -1,4 +1,4 @@
-package com.example.contoso.dto.request;
+package com.example.contoso.dto.request.user;
 
 import lombok.*;
 

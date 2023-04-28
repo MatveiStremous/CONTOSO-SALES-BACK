@@ -1,10 +1,10 @@
 package com.example.contoso.service.impl;
 
-import com.example.contoso.dto.request.MessageRequest;
+import com.example.contoso.dto.request.client.MessageRequest;
 import com.example.contoso.utils.MailSender;
 import com.example.contoso.dto.mapper.ClientMapper;
-import com.example.contoso.dto.request.ClientRequest;
-import com.example.contoso.dto.response.ClientResponse;
+import com.example.contoso.dto.request.client.ClientRequest;
+import com.example.contoso.dto.response.client.ClientResponse;
 import com.example.contoso.entity.Client;
 import com.example.contoso.exception.type.BusinessException;
 import com.example.contoso.repository.ClientRepository;
