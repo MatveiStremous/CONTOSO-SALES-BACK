@@ -22,6 +22,6 @@ public class Discount {
     private Integer numberOfOrders;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "client_id", referencedColumnName = "id")
+    @JoinColumn(name = "client_id")
     private Client client;
 }

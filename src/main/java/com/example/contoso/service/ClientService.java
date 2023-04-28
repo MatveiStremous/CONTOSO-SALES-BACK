@@ -1,7 +1,9 @@
 package com.example.contoso.service;
 
 import com.example.contoso.dto.request.ClientRequest;
+import com.example.contoso.dto.request.MessageRequest;
 import com.example.contoso.dto.response.ClientResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -15,7 +17,8 @@ public interface ClientService {
     void deleteClient(Integer id);
     void updateClient(ClientRequest clientRequest, Integer id);
     List<ClientResponse> getAll();
-    void sendMessageById(String message, Integer id);
-    void sendMessageToAll(String message);
 
+    void sendMessageToAll(MessageRequest messageRequest, MultipartFile file);
+
+    void sendMessageById(MessageRequest messageRequest, Integer id, MultipartFile file);
 }

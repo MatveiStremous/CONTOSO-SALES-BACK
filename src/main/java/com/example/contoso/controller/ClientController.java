@@ -7,6 +7,7 @@ import com.example.contoso.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -48,15 +49,17 @@ public class ClientController {
     }
 
     @PostMapping("message/{id}")
-    public ResponseEntity<String> sendMessageToClient(@RequestBody MessageRequest messageRequest,
-                                                @PathVariable Integer id) {
-        clientService.sendMessageById(messageRequest.getMessage(), id);
+    public ResponseEntity<String> sendMessageToClient(@RequestParam("file") MultipartFile file,
+                                                      @RequestPart("messageRequest") MessageRequest messageRequest,
+                                                      @PathVariable Integer id) {
+        clientService.sendMessageById(messageRequest, id, file);
         return ResponseEntity.ok("Сообщение успешно отправлено!");
     }
 
     @PostMapping("message")
-    public ResponseEntity<String> sendMessageToAll(@RequestBody MessageRequest messageRequest) {
-        clientService.sendMessageToAll(messageRequest.getMessage());
+    public ResponseEntity<String> sendMessageToAll(@RequestParam("file") MultipartFile file,
+                                                   @RequestPart("messageRequest") MessageRequest messageRequest) {
+        clientService.sendMessageToAll(messageRequest, file);
         return ResponseEntity.ok("Сообщение успешно отправлено!");
     }
 }

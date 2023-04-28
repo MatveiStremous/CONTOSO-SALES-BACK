@@ -5,7 +5,7 @@ import lombok.*;
 /**
  * @author Neevels
  * @version 1.0
- * @date 4/27/2023 6:53 PM
+ * @date 4/28/2023 12:35 AM
  */
 @Builder
 @NoArgsConstructor
@@ -13,7 +13,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class MessageRequest {
-    private String message;
-    private String subject;
+public class AmountRequest {
+    private Integer productId;
+    private Integer amount;
 }

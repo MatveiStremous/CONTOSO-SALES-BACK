@@ -2,6 +2,8 @@ package com.example.contoso.controller;
 
 import com.example.contoso.dto.request.UserRequest;
 import com.example.contoso.dto.response.UserResponse;
+import com.example.contoso.entity.Request;
+import com.example.contoso.service.RequestService;
 import com.example.contoso.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminController {
     private final UserService userService;
+    private final RequestService requestService;
 
     @PostMapping("/registration")
     public ResponseEntity<String> register(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
@@ -48,5 +51,12 @@ public class AdminController {
     public ResponseEntity<String> deleteById(@PathVariable Integer id) {
         userService.deleteById(id);
         return ResponseEntity.ok("Успешно удален");
+    }
+
+    @PutMapping("status/{requestId}/{status}")
+    public ResponseEntity<String> updateByRequestStatus(@PathVariable Integer requestId,
+                                                        @PathVariable Request.StatusOfRequest status) {
+        requestService.changeStatus(requestId, status);
+        return ResponseEntity.ok("Успешно обновлен");
     }
 }
