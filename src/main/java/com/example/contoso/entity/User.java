@@ -28,6 +28,7 @@ public class User {
     private String name;
     private String surname;
     private String phoneNumber;
+    private String image;
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -35,6 +36,18 @@ public class User {
     private List<Order> orders;
 
     public enum Role {
-        MANAGER, ADMIN
+        MANAGER("Менеджер отдела продаж"),
+        ADMIN("Руководитель отдела продаж");
+
+        private final String url;
+
+        Role(String url) {
+            this.url = url;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
     }
 }

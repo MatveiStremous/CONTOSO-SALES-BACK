@@ -21,4 +21,7 @@ public class UserRequest {
     private String login;
     private String phoneNumber;
     private String password;
+    private String image;
+
+
 }

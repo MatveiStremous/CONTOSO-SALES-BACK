@@ -1,6 +1,6 @@
 package com.example.contoso.dto.response;
 
-import lombok.Builder;
+import lombok.*;
 
 /**
  * @author Neevels
@@ -13,6 +13,8 @@ public record UserResponse(
         String firstName,
         String lastName,
         String login,
-        String phoneNumber
+        String phoneNumber,
+        String role,
+        String image
 ) {
 }

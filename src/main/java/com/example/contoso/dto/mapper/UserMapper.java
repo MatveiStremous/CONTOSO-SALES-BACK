@@ -21,6 +21,8 @@ public class UserMapper {
                 .lastName(user.getSurname())
                 .login(user.getLogin())
                 .phoneNumber(user.getPhoneNumber())
+                .role(user.getRole().getUrl())
+                .image(user.getImage())
                 .build();
     }
 
@@ -28,6 +30,7 @@ public class UserMapper {
         return User.builder()
                 .name(userRequest.getFirstName())
                 .surname(userRequest.getLastName())
+                .image(userRequest.getImage())
                 .login(userRequest.getLogin())
                 .password(userRequest.getPassword())
                 .phoneNumber(userRequest.getPhoneNumber())

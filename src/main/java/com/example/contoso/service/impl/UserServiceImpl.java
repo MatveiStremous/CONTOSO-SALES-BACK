@@ -30,6 +30,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private static final String ALREADY_EXIST = "Пользователь с почтой: %s уже существует.";
+    private static final String NOT_FOUND = "Пользователь с id %s не найден.";
 
     @Override
     public void registration(UserRequest userRequest) {
@@ -39,7 +41,7 @@ public class UserServiceImpl implements UserService {
             User user = userMapper.toUser(userRequest);
             userRepository.save(user);
         } else {
-            throw new BusinessException(String.format("User with email: %s already exist.", userRequest.getLogin()),
+            throw new BusinessException(String.format(ALREADY_EXIST, userRequest.getLogin()),
                     HttpStatus.NOT_FOUND);
         }
 
@@ -55,10 +57,10 @@ public class UserServiceImpl implements UserService {
                 changePasswordRequest.getNewPassword()
                         .equals(changePasswordRequest.getOldPassword())
         ) {
-            throw new BusinessException("Old and new password are the same. Please, try again!", HttpStatus.CONFLICT);
+            throw new BusinessException("Старый и новый паспорт совпадают. Пожалуйста, попробуйте снова!", HttpStatus.CONFLICT);
         }
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), oldPassword)) {
-            throw new BusinessException("Old password doesn't correct. Please, try again!", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("Старый пароль введен неверно. Пожалуйста, попробуйте снова!", HttpStatus.BAD_REQUEST);
         }
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userRepository.save(user);
@@ -67,11 +69,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse login(LoginRequest loginRequest) {
         User user = userRepository.findByLogin(loginRequest.getLogin())
-                .orElseThrow(() -> new BusinessException(String.format("User with email: %s not found", loginRequest.getLogin()), HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(String.format(NOT_FOUND, loginRequest.getLogin()), HttpStatus.NOT_FOUND));
         if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             return userMapper.toResponseDto(user);
         } else {
-            throw new BusinessException("Password doesnt correct!", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("Пароль некорректный!", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -87,16 +89,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteById(Integer id) {
         User user = getUser(id);
-        if(Objects.equals(user.getRole(), User.Role.MANAGER)) {
+        if (Objects.equals(user.getRole(), User.Role.MANAGER)) {
             userRepository.deleteById(user.getId());
         } else {
-            throw new BusinessException("You cannot delete ADMIN!", HttpStatus.FORBIDDEN);
+            throw new BusinessException("Вы не можете удалить админа!", HttpStatus.FORBIDDEN);
         }
     }
 
 
     private User getUser(Integer id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("User not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(String.format(NOT_FOUND, id), HttpStatus.NOT_FOUND));
     }
 }
