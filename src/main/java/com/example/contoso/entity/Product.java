@@ -1,10 +1,8 @@
 package com.example.contoso.entity;
 
-import com.example.contoso.dto.request.ProductRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigInteger;
 import java.util.List;
 
 /**

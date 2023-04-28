@@ -1,8 +1,8 @@
 package com.example.contoso.controller;
 
-import com.example.contoso.dto.request.AmountRequest;
-import com.example.contoso.dto.request.ProductRequest;
-import com.example.contoso.dto.response.ProductResponse;
+import com.example.contoso.dto.request.user.AmountRequest;
+import com.example.contoso.dto.request.product.ProductRequest;
+import com.example.contoso.dto.response.product.ProductResponse;
 import com.example.contoso.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

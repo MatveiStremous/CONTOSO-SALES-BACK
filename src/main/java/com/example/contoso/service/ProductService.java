@@ -1,7 +1,7 @@
 package com.example.contoso.service;
 
-import com.example.contoso.dto.request.ProductRequest;
-import com.example.contoso.dto.response.ProductResponse;
+import com.example.contoso.dto.request.product.ProductRequest;
+import com.example.contoso.dto.response.product.ProductResponse;
 
 import java.util.List;
 

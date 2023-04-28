@@ -1,14 +1,13 @@
 package com.example.contoso.service.impl;
 
 import com.example.contoso.dto.mapper.ProductMapper;
-import com.example.contoso.dto.request.ProductRequest;
-import com.example.contoso.dto.response.ProductResponse;
+import com.example.contoso.dto.request.product.ProductRequest;
+import com.example.contoso.dto.response.product.ProductResponse;
 import com.example.contoso.entity.Product;
 import com.example.contoso.exception.type.BusinessException;
 import com.example.contoso.repository.ProductRepository;
 import com.example.contoso.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
