@@ -21,7 +21,7 @@ import java.util.List;
 public class RequestRequest {
     private Integer clientId;
     private Integer userId;
-    @JsonFormat(pattern="MM.dd.yyyy")
+    @JsonFormat(pattern="dd.MM.yyyy")
     private Date dateOfDelivery;
     private List<RequestPart> requestLists;
     private String note;

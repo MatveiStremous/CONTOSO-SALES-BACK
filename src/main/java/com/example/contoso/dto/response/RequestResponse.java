@@ -22,9 +22,9 @@ import java.util.List;
 public class RequestResponse {
     Integer requestId;
     String clientEmail;
-    @JsonFormat(pattern="MM.dd.yyyy")
+    @JsonFormat(pattern="dd.MM.yyyy")
     LocalDateTime dateTime;
-    @JsonFormat(pattern="MM.dd.yyyy")
+    @JsonFormat(pattern="dd.MM.yyyy")
     Date dateOfDelivery;
     String status;
     List<R> rList;
