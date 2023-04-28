@@ -1,9 +1,9 @@
 package com.example.contoso.service;
 
-import com.example.contoso.dto.request.ChangePasswordRequest;
-import com.example.contoso.dto.request.LoginRequest;
-import com.example.contoso.dto.request.UserRequest;
-import com.example.contoso.dto.response.UserResponse;
+import com.example.contoso.dto.request.user.ChangePasswordRequest;
+import com.example.contoso.dto.request.user.LoginRequest;
+import com.example.contoso.dto.request.user.UserRequest;
+import com.example.contoso.dto.response.user.UserResponse;
 
 import java.util.List;
 

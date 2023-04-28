@@ -1,5 +1,7 @@
 package com.example.contoso.entity;
 
+import com.example.contoso.entity.enums.PaymentMethod;
+import com.example.contoso.entity.enums.StatusOfRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +30,7 @@ public class Request {
     private LocalDateTime time;
     @JsonFormat(pattern="MM.dd.yyyy")
     private Date dateOfDelivery;
+    private PaymentMethod paymentMethod;
     private StatusOfRequest status;
     private String note;
     @ManyToOne(fetch = FetchType.EAGER)
@@ -39,22 +42,7 @@ public class Request {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<RequestPart> listRequest;
 
-    public enum StatusOfRequest {
-        CANCELLED("Отменена"),
-        DECORATED("Оформлена"),
-        COMPLETED("Выполнена"),
-        ACCEPTED("Подтверждена");
 
-        private final String url;
-
-        StatusOfRequest(String url) {
-            this.url = url;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-    }
 
     @PrePersist
     private void init() {

@@ -1,8 +1,9 @@
 package com.example.contoso.controller;
 
-import com.example.contoso.dto.request.UserRequest;
-import com.example.contoso.dto.response.UserResponse;
+import com.example.contoso.dto.request.user.UserRequest;
+import com.example.contoso.dto.response.user.UserResponse;
 import com.example.contoso.entity.Request;
+import com.example.contoso.entity.enums.StatusOfRequest;
 import com.example.contoso.service.RequestService;
 import com.example.contoso.service.UserService;
 import jakarta.validation.Valid;
@@ -55,7 +56,7 @@ public class AdminController {
 
     @PutMapping("status/{requestId}/{status}")
     public ResponseEntity<String> updateByRequestStatus(@PathVariable Integer requestId,
-                                                        @PathVariable Request.StatusOfRequest status) {
+                                                        @PathVariable StatusOfRequest status) {
         requestService.changeStatus(requestId, status);
         return ResponseEntity.ok("Успешно обновлен");
     }

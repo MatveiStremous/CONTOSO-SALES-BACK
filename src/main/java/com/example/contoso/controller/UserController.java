@@ -1,17 +1,12 @@
 package com.example.contoso.controller;
 
-import com.example.contoso.dto.request.ChangePasswordRequest;
-import com.example.contoso.dto.request.LoginRequest;
-import com.example.contoso.dto.response.UserResponse;
+import com.example.contoso.dto.request.user.ChangePasswordRequest;
+import com.example.contoso.dto.request.user.LoginRequest;
+import com.example.contoso.dto.response.user.UserResponse;
 import com.example.contoso.service.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * @author Neevels

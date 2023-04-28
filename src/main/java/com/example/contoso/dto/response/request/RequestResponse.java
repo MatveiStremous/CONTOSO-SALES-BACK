@@ -1,7 +1,8 @@
-package com.example.contoso.dto.response;
+package com.example.contoso.dto.response.request;
 
+import com.example.contoso.dto.response.request.R;
+import com.example.contoso.entity.enums.PaymentMethod;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -29,5 +30,6 @@ public class RequestResponse {
     String status;
     List<R> rList;
     String note;
+    PaymentMethod paymentMethod;
 
 }

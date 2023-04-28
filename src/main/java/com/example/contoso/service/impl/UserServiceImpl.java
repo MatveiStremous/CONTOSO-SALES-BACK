@@ -1,10 +1,10 @@
 package com.example.contoso.service.impl;
 
 import com.example.contoso.dto.mapper.UserMapper;
-import com.example.contoso.dto.request.ChangePasswordRequest;
-import com.example.contoso.dto.request.LoginRequest;
-import com.example.contoso.dto.request.UserRequest;
-import com.example.contoso.dto.response.UserResponse;
+import com.example.contoso.dto.request.user.ChangePasswordRequest;
+import com.example.contoso.dto.request.user.LoginRequest;
+import com.example.contoso.dto.request.user.UserRequest;
+import com.example.contoso.dto.response.user.UserResponse;
 import com.example.contoso.entity.User;
 import com.example.contoso.exception.type.BusinessException;
 import com.example.contoso.repository.UserRepository;

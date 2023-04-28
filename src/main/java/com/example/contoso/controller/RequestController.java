@@ -1,15 +1,8 @@
 package com.example.contoso.controller;
 
-import com.example.contoso.dto.request.RequestRequest;
-import com.example.contoso.dto.response.RequestResponse;
-import com.example.contoso.entity.Product;
-import com.example.contoso.entity.Request;
-import com.example.contoso.entity.RequestPart;
-import com.example.contoso.repository.ClientRepository;
-import com.example.contoso.repository.ProductRepository;
-import com.example.contoso.repository.RequestRepository;
+import com.example.contoso.dto.request.request.RequestRequest;
+import com.example.contoso.dto.response.request.RequestResponse;
 import com.example.contoso.service.RequestService;
-import jakarta.annotation.PostConstruct;
 import lombok.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

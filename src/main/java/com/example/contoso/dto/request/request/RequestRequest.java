@@ -1,9 +1,9 @@
-package com.example.contoso.dto.request;
+package com.example.contoso.dto.request.request;
 
+import com.example.contoso.entity.enums.PaymentMethod;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -25,5 +25,6 @@ public class RequestRequest {
     private Date dateOfDelivery;
     private List<RequestPart> requestLists;
     private String note;
+    private PaymentMethod paymentMethod;
 
 }

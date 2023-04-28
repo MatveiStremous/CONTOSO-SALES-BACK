@@ -1,11 +1,8 @@
 package com.example.contoso.dto.mapper;
 
-import com.example.contoso.dto.request.ClientRequest;
-import com.example.contoso.dto.request.ProductRequest;
-import com.example.contoso.dto.response.ClientResponse;
-import com.example.contoso.dto.response.ProductResponse;
+import com.example.contoso.dto.request.client.ClientRequest;
+import com.example.contoso.dto.response.client.ClientResponse;
 import com.example.contoso.entity.Client;
-import com.example.contoso.entity.Product;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 

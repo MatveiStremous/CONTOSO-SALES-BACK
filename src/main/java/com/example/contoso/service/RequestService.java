@@ -1,8 +1,9 @@
 package com.example.contoso.service;
 
-import com.example.contoso.dto.request.RequestRequest;
-import com.example.contoso.dto.response.RequestResponse;
+import com.example.contoso.dto.request.request.RequestRequest;
+import com.example.contoso.dto.response.request.RequestResponse;
 import com.example.contoso.entity.Request;
+import com.example.contoso.entity.enums.StatusOfRequest;
 
 import java.util.List;
 
@@ -17,5 +18,6 @@ public interface RequestService {
     void deleteRequest(Integer id);
     void changeStatusToCancelled(Integer requestId);
     List<RequestResponse> getById(Integer userId);
-    void changeStatus(Integer requestId, Request.StatusOfRequest status);
+    void changeStatus(Integer requestId, StatusOfRequest status);
+
 }

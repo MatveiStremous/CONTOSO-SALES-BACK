@@ -1,20 +1,22 @@
 package com.example.contoso.service.impl;
 
-import com.example.contoso.dto.request.RequestRequest;
-import com.example.contoso.dto.response.R;
-import com.example.contoso.dto.response.RequestResponse;
+import com.example.contoso.dto.request.request.RequestRequest;
+import com.example.contoso.dto.response.MailResponse;
+import com.example.contoso.dto.response.request.R;
+import com.example.contoso.dto.response.request.RequestResponse;
 import com.example.contoso.entity.*;
+import com.example.contoso.entity.enums.StatusOfRequest;
 import com.example.contoso.exception.type.BusinessException;
-import com.example.contoso.repository.ClientRepository;
-import com.example.contoso.repository.ProductRepository;
-import com.example.contoso.repository.RequestRepository;
-import com.example.contoso.repository.UserRepository;
+import com.example.contoso.repository.*;
 import com.example.contoso.service.RequestService;
+import com.example.contoso.utils.MailSender;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -26,10 +28,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
 
+    private final OrderRepository orderRepository;
     private final RequestRepository requestRepository;
     private final ClientRepository clientRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final MailSender mailSender;
+
     private static final String NOT_FOUND = "Продукт с id %s не найден.";
     private static final String CLIENT_NOT_FOUND = "Клиент с id %s не найден.";
     private static final String MANAGER_NOT_FOUND = "Менеджер с id %s не найден.";
@@ -56,11 +61,12 @@ public class RequestServiceImpl implements RequestService {
         Optional<Client> client = clientRepository.findById(requestRequest.getClientId());
         if (client.isPresent() && user.isPresent()) {
             Request build = Request.builder()
-                    .status(Request.StatusOfRequest.DECORATED)
+                    .status(StatusOfRequest.DECORATED)
                     .user(user.get())
                     .dateOfDelivery(requestRequest.getDateOfDelivery())
                     .note(requestRequest.getNote())
                     .listRequest(requestLists)
+                    .paymentMethod(requestRequest.getPaymentMethod())
                     .client(client.get())
                     .build();
             requestRepository.save(build);
@@ -89,11 +95,12 @@ public class RequestServiceImpl implements RequestService {
                     Optional<Client> client = clientRepository.findById(requestRequest.getClientId());
                     Request build = Request.builder()
                             .id(request.getId())
-                            .status(Request.StatusOfRequest.DECORATED)
+                            .status(StatusOfRequest.DECORATED)
                             .user(user.get())
                             .dateOfDelivery(requestRequest.getDateOfDelivery())
                             .note(requestRequest.getNote())
                             .time(request.getTime())
+                            .paymentMethod(request.getPaymentMethod())
                             .listRequest(requestParts)
                             .client(client.get())
                             .note(requestRequest.getNote())
@@ -113,7 +120,7 @@ public class RequestServiceImpl implements RequestService {
     public void changeStatusToCancelled(Integer requestId) {
         requestRepository.findById(requestId)
                 .ifPresentOrElse(request -> {
-                            request.setStatus(Request.StatusOfRequest.CANCELLED);
+                            request.setStatus(StatusOfRequest.CANCELLED);
                             requestRepository.save(request);
                         }, () -> {
                             throw new BusinessException(String.format(CODE_NOT_FOUND, requestId), HttpStatus.NOT_FOUND);
@@ -129,13 +136,12 @@ public class RequestServiceImpl implements RequestService {
                 .map(request ->
                         RequestResponse.builder()
                                 .requestId(request.getId())
-                                .clientEmail(request.getClient()
-                                        .getEmail())
-                                .status(request.getStatus()
-                                        .getUrl())
+                                .clientEmail(request.getClient().getEmail())
+                                .status(request.getStatus().getUrl())
                                 .dateTime(request.getTime())
                                 .dateOfDelivery(request.getDateOfDelivery())
                                 .note(request.getNote())
+                                .paymentMethod(request.getPaymentMethod())
                                 .rList(request.getListRequest()
                                         .stream()
                                         .map(requestPart ->
@@ -155,12 +161,51 @@ public class RequestServiceImpl implements RequestService {
                 .toList();
     }
 
+    @Transactional
     @Override
-    public void changeStatus(Integer requestId, Request.StatusOfRequest status) {
+    public void changeStatus(Integer requestId, StatusOfRequest status) {
         requestRepository.findById(requestId)
                 .ifPresentOrElse(request -> {
-                            request.setStatus(status);
-                            requestRepository.save(request);
+                            if (Objects.equals(status, StatusOfRequest.DECORATED)) {
+                                Order order = Order.builder()
+                                        .status(StatusOfRequest.DECORATED)
+                                        .user(request.getUser())
+                                        .listRequest(request.getListRequest())
+                                        .paymentMethod(request.getPaymentMethod())
+                                        .client(request.getClient())
+                                        .build();
+                                request.getListRequest()
+                                        .forEach(requestPart -> {
+                                            /**
+                                             * Manipulation with data before creating order
+                                             */
+
+                                            Product product = requestPart.getProduct();
+                                            int finalReservedAmount = product.getReservedAmount() + product.getAmount();
+                                            product.setReservedAmount(finalReservedAmount);
+                                            product.setAmount(product.getAmount() - requestPart.getAmount());
+                                            productRepository.save(product);
+                                        });
+                                List<MailResponse> mailResponses = request.getListRequest()
+                                        .stream()
+                                        .map(requestPart -> MailResponse.builder()
+                                                .productAmount(requestPart.getAmount())
+                                                .productName(requestPart.getProduct().getName())
+                                                .price(requestPart.getAmount() * requestPart.getProduct().getPrice())
+                                                .build())
+                                        .toList();
+                                Double price = request.getListRequest()
+                                        .stream()
+                                        .mapToDouble(requestPart -> requestPart.getAmount() * requestPart.getProduct().getPrice())
+                                        .sum();
+                                order.setFinalPrice(price);
+                                mailSender.send(request.getClient().getEmail(), "Заказ", "Благодарим вас за сделанный вами заказ. Оставайтесь с нами" ,mailResponses, price, request.getPaymentMethod());
+                                orderRepository.save(order);
+                                requestRepository.delete(request);
+                            } else {
+                                request.setStatus(status);
+                                requestRepository.save(request);
+                            }
                         }, () -> {
                             throw new BusinessException("Заявка не найдена", HttpStatus.NOT_FOUND);
                         }

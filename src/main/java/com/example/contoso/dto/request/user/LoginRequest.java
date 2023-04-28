@@ -1,4 +1,4 @@
-package com.example.contoso.dto.request;
+package com.example.contoso.dto.request.user;
 
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -6,7 +6,7 @@ import lombok.*;
 /**
  * @author Neevels
  * @version 1.0
- * @date 4/27/2023 11:24 AM
+ * @date 4/27/2023 4:40 PM
  */
 @Builder
 @NoArgsConstructor
@@ -14,14 +14,8 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class UserRequest {
-    private String firstName;
-    private String lastName;
+public class LoginRequest {
     @Email(message = "invalid email")
     private String login;
-    private String phoneNumber;
     private String password;
-    private String image;
-
-
 }

@@ -1,4 +1,4 @@
-package com.example.contoso.dto.response;
+package com.example.contoso.dto.response.product;
 
 import lombok.Builder;
 
