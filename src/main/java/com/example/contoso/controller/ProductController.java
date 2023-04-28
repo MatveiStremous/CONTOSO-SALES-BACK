@@ -1,5 +1,6 @@
 package com.example.contoso.controller;
 
+import com.example.contoso.dto.request.AmountRequest;
 import com.example.contoso.dto.request.ProductRequest;
 import com.example.contoso.dto.response.ProductResponse;
 import com.example.contoso.service.ProductService;
@@ -45,5 +46,12 @@ public class ProductController {
         productService.updateProduct(productRequest, id);
         return ResponseEntity.ok("Продукт успешно обновлен!");
     }
+
+    @PutMapping("amount")
+    public ResponseEntity<String> updateProduct(@RequestBody AmountRequest amountRequest) {
+        productService.updateProductAmount(amountRequest.getAmount(), amountRequest.getProductId());
+        return ResponseEntity.ok("Продукт успешно обновлен!");
+    }
+
 
 }

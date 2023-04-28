@@ -1,5 +1,6 @@
 package com.example.contoso.entity;
 
+import com.example.contoso.dto.request.ProductRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,17 +26,20 @@ public class Product {
     private String name;
     @Column(unique = true)
     private Integer code;
-    private Long reservedAmount;
-    private Long freeAmount;
+    private int reservedAmount;
+    private int amount;
     private Double price;
 
-    @ManyToMany
-    @JoinTable(
-            name = "Product_Request",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "request_id")
-    )
-    private List<Request> requestList;
+    //    @ManyToMany
+//    @JoinTable(
+//            name = "Product_Request",
+//            joinColumns = @JoinColumn(name = "product_id"),
+//            inverseJoinColumns = @JoinColumn(name = "request_id")
+//    )
+//    private List<Request> requestList;
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "client_id")
+//    private ProductRequest productRequest;
 
     @ManyToMany
     @JoinTable(
@@ -44,4 +48,5 @@ public class Product {
             inverseJoinColumns = @JoinColumn(name = "order_id")
     )
     private List<Order> orderList;
+
 }

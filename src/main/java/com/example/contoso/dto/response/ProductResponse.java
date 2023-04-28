@@ -12,8 +12,8 @@ public record ProductResponse(
         Integer id,
         String name,
         Integer code,
-        Long reservedAmount,
-        Long freeAmount,
+        Integer reservedAmount,
+        Integer amount,
         Double price
 ) {
 }

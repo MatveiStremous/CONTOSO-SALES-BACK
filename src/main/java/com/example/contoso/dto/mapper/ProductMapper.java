@@ -18,7 +18,7 @@ public class ProductMapper {
         return ProductResponse.builder()
                 .id(product.getId())
                 .code(product.getCode())
-                .freeAmount(product.getFreeAmount())
+                .amount(product.getAmount())
                 .reservedAmount(product.getReservedAmount())
                 .price(product.getPrice())
                 .name(product.getName())
@@ -28,7 +28,7 @@ public class ProductMapper {
     public Product toProduct(ProductRequest productRequest) {
         return Product.builder()
                 .code(productRequest.getCode())
-                .freeAmount(productRequest.getFreeAmount())
+                .amount(productRequest.getAmount())
                 .reservedAmount(productRequest.getReservedAmount())
                 .name(productRequest.getName())
                 .price(productRequest.getPrice())
