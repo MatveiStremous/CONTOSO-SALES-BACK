@@ -28,23 +28,4 @@ public class Product {
     private int amount;
     private Double price;
 
-    //    @ManyToMany
-//    @JoinTable(
-//            name = "Product_Request",
-//            joinColumns = @JoinColumn(name = "product_id"),
-//            inverseJoinColumns = @JoinColumn(name = "request_id")
-//    )
-//    private List<Request> requestList;
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "client_id")
-//    private ProductRequest productRequest;
-
-    @ManyToMany
-    @JoinTable(
-            name = "Product_Order",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "order_id")
-    )
-    private List<Order> orderList;
-
 }

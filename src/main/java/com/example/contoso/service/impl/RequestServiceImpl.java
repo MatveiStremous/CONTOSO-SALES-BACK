@@ -27,6 +27,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
+    //TODO когда статус заказа закрыт то поле с резервным продуктом обноляется
 
     private final OrderRepository orderRepository;
     private final RequestRepository requestRepository;
@@ -136,8 +137,10 @@ public class RequestServiceImpl implements RequestService {
                 .map(request ->
                         RequestResponse.builder()
                                 .requestId(request.getId())
-                                .clientEmail(request.getClient().getEmail())
-                                .status(request.getStatus().getUrl())
+                                .clientEmail(request.getClient()
+                                        .getEmail())
+                                .status(request.getStatus()
+                                        .getUrl())
                                 .dateTime(request.getTime())
                                 .dateOfDelivery(request.getDateOfDelivery())
                                 .note(request.getNote())
@@ -146,13 +149,19 @@ public class RequestServiceImpl implements RequestService {
                                         .stream()
                                         .map(requestPart ->
                                                 R.builder()
-                                                        .reservedAmount(requestPart.getProduct().getReservedAmount())
-                                                        .amount(requestPart.getProduct().getAmount())
-                                                        .pricePerItem(requestPart.getProduct().getPrice())
+                                                        .reservedAmount(requestPart.getProduct()
+                                                                .getReservedAmount())
+                                                        .amount(requestPart.getProduct()
+                                                                .getAmount())
+                                                        .pricePerItem(requestPart.getProduct()
+                                                                .getPrice())
                                                         .clientAmount(requestPart.getAmount())
-                                                        .code(requestPart.getProduct().getCode())
-                                                        .name(requestPart.getProduct().getName())
-                                                        .productId(requestPart.getProduct().getId())
+                                                        .code(requestPart.getProduct()
+                                                                .getCode())
+                                                        .name(requestPart.getProduct()
+                                                                .getName())
+                                                        .productId(requestPart.getProduct()
+                                                                .getId())
                                                         .build()
                                         )
                                         .toList())
@@ -179,27 +188,36 @@ public class RequestServiceImpl implements RequestService {
                                             /**
                                              * Manipulation with data before creating order
                                              */
-
                                             Product product = requestPart.getProduct();
-                                            int finalReservedAmount = product.getReservedAmount() + product.getAmount();
-                                            product.setReservedAmount(finalReservedAmount);
-                                            product.setAmount(product.getAmount() - requestPart.getAmount());
-                                            productRepository.save(product);
+                                            if (product.getAmount() - requestPart.getAmount() >= 0) {
+                                                int finalReservedAmount = product.getReservedAmount() + product.getAmount();
+                                                product.setReservedAmount(finalReservedAmount);
+                                                product.setAmount(product.getAmount() - requestPart.getAmount());
+                                                productRepository.save(product);
+                                            } else {
+                                                throw new BusinessException("Количество единиц продукта на складе меньше, чем требуется в заказе. Попробуйте пополнить склад для проведения операции",
+                                                        HttpStatus.FORBIDDEN);
+                                            }
+
                                         });
                                 List<MailResponse> mailResponses = request.getListRequest()
                                         .stream()
                                         .map(requestPart -> MailResponse.builder()
                                                 .productAmount(requestPart.getAmount())
-                                                .productName(requestPart.getProduct().getName())
-                                                .price(requestPart.getAmount() * requestPart.getProduct().getPrice())
+                                                .productName(requestPart.getProduct()
+                                                        .getName())
+                                                .price(requestPart.getAmount() * requestPart.getProduct()
+                                                        .getPrice())
                                                 .build())
                                         .toList();
                                 Double price = request.getListRequest()
                                         .stream()
-                                        .mapToDouble(requestPart -> requestPart.getAmount() * requestPart.getProduct().getPrice())
+                                        .mapToDouble(requestPart -> requestPart.getAmount() * requestPart.getProduct()
+                                                .getPrice())
                                         .sum();
                                 order.setFinalPrice(price);
-                                mailSender.send(request.getClient().getEmail(), "Заказ", "Благодарим вас за сделанный вами заказ. Оставайтесь с нами" ,mailResponses, price, request.getPaymentMethod());
+                                mailSender.send(request.getClient()
+                                        .getEmail(), "Заказ", "Благодарим вас за сделанный вами заказ. Оставайтесь с нами", mailResponses, price, request.getPaymentMethod());
                                 orderRepository.save(order);
                                 requestRepository.delete(request);
                             } else {
@@ -210,5 +228,37 @@ public class RequestServiceImpl implements RequestService {
                             throw new BusinessException("Заявка не найдена", HttpStatus.NOT_FOUND);
                         }
                 );
+    }
+
+    @Override
+    public List<RequestResponse> getAll() {
+        return requestRepository.findAll()
+                .stream()
+                .map(request -> RequestResponse.builder()
+                        .requestId(request.getId())
+                        .clientEmail(request.getClient()
+                                .getEmail())
+                        .status(request.getStatus()
+                                .getUrl())
+                        .dateTime(request.getTime())
+                        .dateOfDelivery(request.getDateOfDelivery())
+                        .note(request.getNote())
+                        .paymentMethod(request.getPaymentMethod())
+                        .rList(request.getListRequest()
+                                .stream()
+                                .map(requestPart ->
+                                        R.builder()
+                                                .reservedAmount(requestPart.getProduct().getReservedAmount())
+                                                .amount(requestPart.getProduct().getAmount())
+                                                .pricePerItem(requestPart.getProduct().getPrice())
+                                                .clientAmount(requestPart.getAmount())
+                                                .code(requestPart.getProduct().getCode())
+                                                .name(requestPart.getProduct().getName())
+                                                .productId(requestPart.getProduct().getId())
+                                                .build()
+                                )
+                                .toList())
+                        .build())
+                .toList();
     }
 }

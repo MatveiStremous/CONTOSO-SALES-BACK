@@ -30,7 +30,9 @@ public class Request {
     private LocalDateTime time;
     @JsonFormat(pattern="MM.dd.yyyy")
     private Date dateOfDelivery;
+    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
+    @Enumerated(EnumType.STRING)
     private StatusOfRequest status;
     private String note;
     @ManyToOne(fetch = FetchType.EAGER)

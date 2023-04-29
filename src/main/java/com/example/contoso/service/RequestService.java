@@ -20,4 +20,5 @@ public interface RequestService {
     List<RequestResponse> getById(Integer userId);
     void changeStatus(Integer requestId, StatusOfRequest status);
 
+    List<RequestResponse> getAll();
 }

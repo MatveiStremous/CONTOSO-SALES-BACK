@@ -25,7 +25,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Double finalPrice;
+    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
+    @Enumerated(EnumType.STRING)
     private StatusOfRequest status;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id")

@@ -1,6 +1,7 @@
 package com.example.contoso.controller;
 
 import com.example.contoso.dto.request.user.UserRequest;
+import com.example.contoso.dto.response.request.RequestResponse;
 import com.example.contoso.dto.response.user.UserResponse;
 import com.example.contoso.entity.Request;
 import com.example.contoso.entity.enums.StatusOfRequest;
@@ -46,6 +47,13 @@ public class AdminController {
         return ResponseEntity
                 .ok()
                 .body(userService.getAllManagers());
+    }
+
+    @GetMapping("/requests")
+    public ResponseEntity<List<RequestResponse>> getAllRequests() {
+        return ResponseEntity
+                .ok()
+                .body(requestService.getAll());
     }
 
     @DeleteMapping("/{id}")
