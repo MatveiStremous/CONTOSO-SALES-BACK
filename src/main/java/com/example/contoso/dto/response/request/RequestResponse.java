@@ -30,7 +30,7 @@ public class RequestResponse {
     String status;
     List<R> rList;
     String note;
-    PaymentMethod paymentMethod;
+    String paymentMethod;
     String fullName;
 
 }

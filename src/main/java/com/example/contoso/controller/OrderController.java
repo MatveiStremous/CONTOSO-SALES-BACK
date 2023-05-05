@@ -1,13 +1,13 @@
 package com.example.contoso.controller;
 
-import com.example.contoso.entity.enums.StatusOfRequest;
+import com.example.contoso.dto.response.order.OrderResponse;
+import com.example.contoso.entity.enums.OrderStatus;
 import com.example.contoso.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Neevels
@@ -23,9 +23,15 @@ public class OrderController {
 
     @PutMapping("/{id}/{orderStatus}")
     public ResponseEntity<String> changeOrderStatus(@PathVariable Integer id,
-                                                    @PathVariable StatusOfRequest orderStatus) {
-        orderService.changeOrderStatus( id,  orderStatus);
+                                                    @PathVariable OrderStatus orderStatus) {
+        orderService.changeOrderStatus(id, orderStatus);
         return ResponseEntity.ok("Статус успешно изменен");
+    }
+
+    @GetMapping
+    public ResponseEntity<List<OrderResponse>> changeOrderStatus() {
+        return ResponseEntity.ok()
+                .body(orderService.getAll());
     }
 
 }

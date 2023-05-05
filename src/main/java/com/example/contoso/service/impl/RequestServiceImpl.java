@@ -5,6 +5,7 @@ import com.example.contoso.dto.response.MailResponse;
 import com.example.contoso.dto.response.request.R;
 import com.example.contoso.dto.response.request.RequestResponse;
 import com.example.contoso.entity.*;
+import com.example.contoso.entity.enums.OrderStatus;
 import com.example.contoso.entity.enums.StatusOfRequest;
 import com.example.contoso.exception.type.BusinessException;
 import com.example.contoso.repository.*;
@@ -27,7 +28,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
-    //TODO когда статус заказа закрыт то поле с резервным продуктом обноляется
 
     private final OrderRepository orderRepository;
     private final RequestRepository requestRepository;
@@ -85,25 +85,26 @@ public class RequestServiceImpl implements RequestService {
                     List<RequestPart> requestParts = requestRequest.getRequestLists()
                             .stream()
                             .map(requestPart -> {
-                                Optional<Product> product = productRepository.findById(requestPart.getProductId());
+                                Product product = productRepository.findById(requestPart.getProductId())
+                                        .orElseThrow(() -> new BusinessException(CODE_NOT_FOUND, HttpStatus.NOT_FOUND));
                                 return RequestPart.builder()
                                         .amount(requestPart.getAmount())
-                                        .product(product.get())
+                                        .product(product)
                                         .build();
                             })
                             .toList();
-                    Optional<User> user = userRepository.findById(requestRequest.getUserId());
-                    Optional<Client> client = clientRepository.findById(requestRequest.getClientId());
+                    User user = userRepository.findById(requestRequest.getUserId())
+                            .orElseThrow(() -> new BusinessException(MANAGER_NOT_FOUND, HttpStatus.NOT_FOUND));
                     Request build = Request.builder()
                             .id(request.getId())
                             .status(StatusOfRequest.DECORATED)
-                            .user(user.get())
+                            .user(user)
                             .dateOfDelivery(requestRequest.getDateOfDelivery())
                             .note(requestRequest.getNote())
                             .time(request.getTime())
                             .paymentMethod(request.getPaymentMethod())
                             .listRequest(requestParts)
-                            .client(client.get())
+                            .client(request.getClient())
                             .note(requestRequest.getNote())
                             .build();
                     requestRepository.save(build);
@@ -137,31 +138,23 @@ public class RequestServiceImpl implements RequestService {
                 .map(request ->
                         RequestResponse.builder()
                                 .requestId(request.getId())
-                                .clientEmail(request.getClient()
-                                        .getEmail())
-                                .status(request.getStatus()
-                                        .getUrl())
+                                .clientEmail(request.getClient().getEmail())
+                                .status(request.getStatus().getUrl())
                                 .dateTime(request.getTime())
                                 .dateOfDelivery(request.getDateOfDelivery())
                                 .note(request.getNote())
-                                .paymentMethod(request.getPaymentMethod())
+                                .paymentMethod(request.getPaymentMethod().getUrl())
                                 .rList(request.getListRequest()
                                         .stream()
                                         .map(requestPart ->
                                                 R.builder()
-                                                        .reservedAmount(requestPart.getProduct()
-                                                                .getReservedAmount())
-                                                        .amount(requestPart.getProduct()
-                                                                .getAmount())
-                                                        .pricePerItem(requestPart.getProduct()
-                                                                .getPrice())
+                                                        .reservedAmount(requestPart.getProduct().getReservedAmount())
+                                                        .amount(requestPart.getProduct().getAmount())
+                                                        .pricePerItem(requestPart.getProduct().getPrice())
                                                         .clientAmount(requestPart.getAmount())
-                                                        .code(requestPart.getProduct()
-                                                                .getCode())
-                                                        .name(requestPart.getProduct()
-                                                                .getName())
-                                                        .productId(requestPart.getProduct()
-                                                                .getId())
+                                                        .code(requestPart.getProduct().getCode())
+                                                        .name(requestPart.getProduct().getName())
+                                                        .productId(requestPart.getProduct().getId())
                                                         .build()
                                         )
                                         .toList())
@@ -175,9 +168,9 @@ public class RequestServiceImpl implements RequestService {
     public void changeStatus(Integer requestId, StatusOfRequest status) {
         requestRepository.findById(requestId)
                 .ifPresentOrElse(request -> {
-                            if (Objects.equals(status, StatusOfRequest.DECORATED)) {
+                            if (Objects.equals(status, StatusOfRequest.COMPLETED)) {
                                 Order order = Order.builder()
-                                        .status(StatusOfRequest.DECORATED)
+                                        .status(OrderStatus.DECORATED)
                                         .user(request.getUser())
                                         .listRequest(request.getListRequest())
                                         .paymentMethod(request.getPaymentMethod())
@@ -228,7 +221,8 @@ public class RequestServiceImpl implements RequestService {
     public List<RequestResponse> getAll() {
         return requestRepository.findAll()
                 .stream()
-                .filter(request -> request.getStatus().equals(StatusOfRequest.DECORATED))
+                .filter(request -> request.getStatus()
+                        .equals(StatusOfRequest.DECORATED))
                 .map(request -> RequestResponse.builder()
                         .requestId(request.getId())
                         .clientEmail(request.getClient().getEmail())
@@ -236,7 +230,7 @@ public class RequestServiceImpl implements RequestService {
                         .dateTime(request.getTime())
                         .dateOfDelivery(request.getDateOfDelivery())
                         .note(request.getNote())
-                        .paymentMethod(request.getPaymentMethod())
+                        .paymentMethod(request.getPaymentMethod().getUrl())
                         .fullName(request.getUser().getName() + " " + request.getUser().getSurname())
                         .rList(request.getListRequest()
                                 .stream()

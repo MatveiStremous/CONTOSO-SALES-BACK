@@ -1,5 +1,6 @@
 package com.example.contoso.entity;
 
+import com.example.contoso.entity.enums.OrderStatus;
 import com.example.contoso.entity.enums.PaymentMethod;
 import com.example.contoso.entity.enums.StatusOfRequest;
 import jakarta.persistence.*;
@@ -28,7 +29,7 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
     @Enumerated(EnumType.STRING)
-    private StatusOfRequest status;
+    private OrderStatus status;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id")
     private Client client;
