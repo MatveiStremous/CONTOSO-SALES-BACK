@@ -196,22 +196,18 @@ public class RequestServiceImpl implements RequestService {
                                                 throw new BusinessException("Количество единиц продукта на складе меньше, чем требуется в заказе. Попробуйте пополнить склад для проведения операции",
                                                         HttpStatus.FORBIDDEN);
                                             }
-
                                         });
                                 List<MailResponse> mailResponses = request.getListRequest()
                                         .stream()
                                         .map(requestPart -> MailResponse.builder()
                                                 .productAmount(requestPart.getAmount())
-                                                .productName(requestPart.getProduct()
-                                                        .getName())
-                                                .price(requestPart.getAmount() * requestPart.getProduct()
-                                                        .getPrice())
+                                                .productName(requestPart.getProduct().getName())
+                                                .price(requestPart.getAmount() * requestPart.getProduct().getPrice())
                                                 .build())
                                         .toList();
                                 Double price = request.getListRequest()
                                         .stream()
-                                        .mapToDouble(requestPart -> requestPart.getAmount() * requestPart.getProduct()
-                                                .getPrice())
+                                        .mapToDouble(requestPart -> requestPart.getAmount() * requestPart.getProduct().getPrice())
                                         .sum();
                                 order.setFinalPrice(price);
                                 mailSender.send(request.getClient()
@@ -234,14 +230,13 @@ public class RequestServiceImpl implements RequestService {
                 .stream()
                 .map(request -> RequestResponse.builder()
                         .requestId(request.getId())
-                        .clientEmail(request.getClient()
-                                .getEmail())
-                        .status(request.getStatus()
-                                .getUrl())
+                        .clientEmail(request.getClient().getEmail())
+                        .status(request.getStatus().getUrl())
                         .dateTime(request.getTime())
                         .dateOfDelivery(request.getDateOfDelivery())
                         .note(request.getNote())
                         .paymentMethod(request.getPaymentMethod())
+                        .fullName(request.getUser().getName() + " " + request.getUser().getSurname())
                         .rList(request.getListRequest()
                                 .stream()
                                 .map(requestPart ->

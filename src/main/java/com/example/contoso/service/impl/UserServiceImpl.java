@@ -30,8 +30,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
-    private static final String ALREADY_EXIST = "Пользователь с почтой: %s уже существует.";
-    private static final String NOT_FOUND = "Пользователь с id %s не найден.";
+    private static final String ALREADY_EXIST = "Пользователь с логином %s уже существует.";
+    private static final String NOT_FOUND = "Пользователь с логином %s не найден.";
 
     @Override
     public void registration(UserRequest userRequest) {

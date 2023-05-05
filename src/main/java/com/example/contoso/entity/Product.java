@@ -27,5 +27,6 @@ public class Product {
     private int reservedAmount;
     private int amount;
     private Double price;
+//    private boolean isActive;
 
 }

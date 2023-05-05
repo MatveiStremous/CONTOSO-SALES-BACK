@@ -41,6 +41,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProductById(Integer id) {
+        //TODO: если количество зарезервированное > 0 -> exception товар не может быть удален так как он находится у кого-то в резерве
         productRepository.findById(id)
                 .ifPresentOrElse(productRepository::delete,
                         () -> {

@@ -31,5 +31,6 @@ public class RequestResponse {
     List<R> rList;
     String note;
     PaymentMethod paymentMethod;
+    String fullName;
 
 }
