@@ -45,61 +45,77 @@ public class InitDB {
                         .surname("admin")
                         .build(),
                 User.builder()
-                        .name("manager")
+                        .name("Иван")
                         .image("2.png")
                         .login("manager@gmail.com")
                         .password(passwordEncoder.encode("manager"))
                         .phoneNumber("+375297694430")
                         .role(User.Role.MANAGER)
-                        .surname("manager")
+                        .surname("Иванов")
                         .build()
         );
 
         List<Product> products = List.of(Product.builder()
-                        .price(100.0)
+                        .price(5.0)
                         .code(123456)
                         .amount(10)
                         .reservedAmount(0)
-                        .name("Люся")
+                        .name("Ластик")
                         .build(),
                 Product.builder()
-                        .price(20.0)
+                        .price(12.0)
                         .code(123455)
                         .amount(20)
                         .reservedAmount(0)
-                        .name("Карик")
+                        .name("Ручка")
                         .build(),
                 Product.builder()
-                        .price(300.0)
+                        .price(6.0)
                         .code(123445)
                         .amount(10)
                         .reservedAmount(0)
-                        .name("Нарик")
+                        .name("Карандаш")
                         .build(),
                 Product.builder()
-                        .price(100.0)
+                        .price(5.0)
                         .code(654321)
                         .amount(10)
                         .reservedAmount(0)
-                        .name("Гарик")
+                        .name("Линейка")
                         .build(),
                 Product.builder()
                         .price(140.0)
                         .code(11111)
                         .amount(40)
                         .reservedAmount(0)
-                        .name("Лафик")
+                        .name("Пенал")
                         .build()
         );
 
-        productRepository.saveAll(products);
-        userRepository.saveAll(users);
-        clientRepository.save(Client.builder()
-                        .name("Ilya")
+        List<Client> clients = List.of(Client.builder()
+                        .name("Sanechka")
+                        .phoneNumber("+375293621343")
+                        .email("sasha987adamonis@gmail.com")
+                        .dateOfRegistration(LocalDateTime.now())
+                        .address("Радунский проспект д.21 кв 7")
+                        .build(),
+                Client.builder()
+                        .name("Matthew")
+                        .phoneNumber("+375299648938")
+                        .email("stremousik@mail.ru")
+                        .dateOfRegistration(LocalDateTime.now())
+                        .address("Радунский проспект д.22 кв 8")
+                        .build(),
+                Client.builder()
+                        .name("Ilyha")
                         .phoneNumber("+375297654321")
                         .email("neevels@mail.ru")
                         .dateOfRegistration(LocalDateTime.now())
-                        .address("Радуньский проспект д.20 кв 6")
-                .build());
+                        .address("Радунский проспект д.20 кв 6")
+                        .build());
+
+        productRepository.saveAll(products);
+        userRepository.saveAll(users);
+        clientRepository.saveAll(clients);
     }
 }

@@ -6,10 +6,8 @@ package com.example.contoso.entity.enums;
  * @date 4/28/2023 11:30 PM
  */
 public enum StatusOfRequest {
-    CANCELLED("Отменена"),
-    DECORATED("Оформлена"),
-    COMPLETED("Выполнена"),
-    ACCEPTED("Подтверждена");
+    CANCELLED("Отклонена"),
+    DECORATED("Оформлена");
 
     private final String url;
 

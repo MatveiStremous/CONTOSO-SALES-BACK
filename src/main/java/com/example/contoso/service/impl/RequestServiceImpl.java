@@ -228,6 +228,7 @@ public class RequestServiceImpl implements RequestService {
     public List<RequestResponse> getAll() {
         return requestRepository.findAll()
                 .stream()
+                .filter(request -> request.getStatus().equals(StatusOfRequest.DECORATED))
                 .map(request -> RequestResponse.builder()
                         .requestId(request.getId())
                         .clientEmail(request.getClient().getEmail())
