@@ -1,10 +1,10 @@
 package com.example.contoso.service.impl;
 
 import com.example.contoso.dto.mapper.OrderMapper;
+import com.example.contoso.dto.request.order.CancelOrderRequest;
 import com.example.contoso.dto.response.order.OrderResponse;
 import com.example.contoso.entity.Product;
 import com.example.contoso.entity.enums.OrderStatus;
-import com.example.contoso.entity.enums.StatusOfRequest;
 import com.example.contoso.exception.type.BusinessException;
 import com.example.contoso.repository.OrderRepository;
 import com.example.contoso.repository.ProductRepository;
@@ -37,7 +37,8 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.findById(id)
                 .ifPresentOrElse(order -> {
                     if (Objects.equals(OrderStatus.COMPLETED, orderStatus)) {
-                        String userEmail = order.getUser().getLogin();
+                        String userEmail = order.getUser()
+                                .getLogin();
                         mailSender.sendMessage(userEmail,
                                 "Заказ успешно выполнен",
                                 "Поздравляю, заказ с номером "
@@ -68,7 +69,6 @@ public class OrderServiceImpl implements OrderService {
                         order.setStatus(OrderStatus.CANCELLED);
                         orderRepository.save(order);
                     }
-
                 }, () -> {
                     throw new BusinessException("Заказ не найден", HttpStatus.NOT_FOUND);
                 });
@@ -80,5 +80,28 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .map(orderMapper::toResponseDto)
                 .toList();
+    }
+
+    @Override
+    public void cancelOrder(CancelOrderRequest cancelOrder) {
+        orderRepository.findById(cancelOrder.getOrderId())
+                .ifPresentOrElse(order -> {
+                    order.getListRequest()
+                            .forEach(requestPart -> {
+                                Product product = requestPart.getProduct();
+                                int amountOfOrder = requestPart.getAmount();
+                                int reservedAmount = product.getReservedAmount();
+                                product.setReservedAmount(reservedAmount + amountOfOrder);
+                                productRepository.save(product);
+                            });
+                    order.setStatus(OrderStatus.CANCELLED);
+                    orderRepository.save(order);
+                    mailSender.sendMessage(order.getClient()
+                            .getEmail(),
+                            "Ваш заказ отклонен!",
+                            "Ваш заказ отклонен по причине: " + cancelOrder.getMessage());
+                }, () -> {
+                    throw new BusinessException("Заказ не найден", HttpStatus.NOT_FOUND);
+                });
     }
 }

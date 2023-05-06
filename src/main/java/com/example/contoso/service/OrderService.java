@@ -1,8 +1,8 @@
 package com.example.contoso.service;
 
+import com.example.contoso.dto.request.order.CancelOrderRequest;
 import com.example.contoso.dto.response.order.OrderResponse;
 import com.example.contoso.entity.enums.OrderStatus;
-import com.example.contoso.entity.enums.StatusOfRequest;
 
 import java.util.List;
 
@@ -15,4 +15,7 @@ public interface OrderService {
     void changeOrderStatus(Integer id, OrderStatus orderStatus);
 
     List<OrderResponse> getAll();
+
+    void cancelOrder(CancelOrderRequest cancelOrder);
+
 }

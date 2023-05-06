@@ -6,8 +6,8 @@ package com.example.contoso.entity.enums;
  * @date 5/5/2023 2:36 PM
  */
 public enum OrderStatus {
-    CANCELLED("Отклонена"),
-    DECORATED("Оформлена"),
+    CANCELLED("Отклонен"),
+    DECORATED("Оформлен"),
     COMPLETED("Выполнен");
 
     private final String url;

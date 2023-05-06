@@ -2,7 +2,6 @@ package com.example.contoso.service;
 
 import com.example.contoso.dto.request.request.RequestRequest;
 import com.example.contoso.dto.response.request.RequestResponse;
-import com.example.contoso.entity.Request;
 import com.example.contoso.entity.enums.StatusOfRequest;
 
 import java.util.List;
@@ -21,4 +20,5 @@ public interface RequestService {
     void changeStatus(Integer requestId, StatusOfRequest status);
 
     List<RequestResponse> getAll();
+
 }
