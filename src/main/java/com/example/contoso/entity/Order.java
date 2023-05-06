@@ -6,6 +6,7 @@ import com.example.contoso.entity.enums.StatusOfRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -38,6 +39,14 @@ public class Order {
     private User user;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<RequestPart> listRequest;
-
+    private LocalDate dateOfCreated;
+    private LocalDate dateOfRequest;
+    private LocalDate closingDate;
+    @Column(length = 1052)
+    private String note;
+    @PrePersist
+    public void init() {
+        dateOfCreated = LocalDate.now();
+    }
 
 }

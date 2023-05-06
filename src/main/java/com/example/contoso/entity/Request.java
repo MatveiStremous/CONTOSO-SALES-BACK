@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -27,9 +28,9 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @JsonFormat(pattern="MM.dd.yyyy")
-    private LocalDateTime time;
+    private LocalDate time;
     @JsonFormat(pattern="MM.dd.yyyy")
-    private Date dateOfDelivery;
+    private LocalDate dateOfDelivery;
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
     @Enumerated(EnumType.STRING)
@@ -45,9 +46,8 @@ public class Request {
     private List<RequestPart> listRequest;
 
 
-
     @PrePersist
     private void init() {
-        time = LocalDateTime.now();
+        time = LocalDate.now();
     }
 }

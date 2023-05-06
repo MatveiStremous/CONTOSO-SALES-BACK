@@ -92,7 +92,7 @@ public class ClientServiceImpl implements ClientService {
 
     private void sendMessageToEmail(String email, String message, MultipartFile file, String subject) {
         try {
-            mailSender.send(email, subject, message, file);
+            mailSender.sendFile(email, subject, message, file);
         } catch (MessagingException | IOException e) {
             throw new RuntimeException(e);
         }

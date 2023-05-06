@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,11 +25,28 @@ public class MailSender {
     private final JavaMailSender mailSender;
     private final String username = "FastEmaaiil@yandex.ru";
 
+    public void sendMessage(String emailTo, String subject, String message) {
+        MimeMessage messageTo = mailSender.createMimeMessage();
+        MimeMessageHelper helper = null;
 
-    public void send(String emailTo, String subject, String message, MultipartFile multipartFile) throws MessagingException, IOException {
+        try {
+            helper = new MimeMessageHelper(messageTo, true);
+            helper.setFrom(username, "CONTOSO");
+            helper.setTo(emailTo);
+            helper.setSubject(subject);
+            helper.setText(message);
+            mailSender.send(messageTo);
+        } catch (MessagingException | UnsupportedEncodingException e ) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public void sendFile(String emailTo, String subject, String message, MultipartFile multipartFile) throws MessagingException, IOException {
         MimeMessage messageTo = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(messageTo, true);
-        helper.setFrom(username);
+        helper.setFrom(username, "CONTOSO");
+
         helper.setTo(emailTo);
         helper.setSubject(subject);
         helper.setText(message);
@@ -38,7 +56,7 @@ public class MailSender {
         mailSender.send(messageTo);
     }
 
-    public void send(String emailTo, String subject, String message, List<MailResponse> mailResponseList, Double price, PaymentMethod paymentMethod) {
+    public void sendOrderInformationToClient(String emailTo, String subject, String message, List<MailResponse> mailResponseList, Double price, PaymentMethod paymentMethod) {
         MimeMessage messageTo = mailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(messageTo, true, "UTF-8");
@@ -83,12 +101,14 @@ public class MailSender {
                     "</html>";
 
 
-            helper.setFrom(username);
+            helper.setFrom(username, "CONTOSO");
             helper.setTo(emailTo);
             helper.setSubject(subject);
             helper.setText(html, true);
             mailSender.send(messageTo);
         } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }

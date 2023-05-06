@@ -169,12 +169,20 @@ public class RequestServiceImpl implements RequestService {
         requestRepository.findById(requestId)
                 .ifPresentOrElse(request -> {
                             if (Objects.equals(status, StatusOfRequest.COMPLETED)) {
+                                mailSender.sendMessage(request.getUser().getLogin(),
+                                        "Заявка успешно подтверждена",
+                                        "Дорогой менеджер, поздравляем! Заявка с номером "
+                                                + request.getId()
+                                                + " успешно перешла в стадию закаказа. Благодарим вас за проделанную работу!"
+                                );
                                 Order order = Order.builder()
                                         .status(OrderStatus.DECORATED)
                                         .user(request.getUser())
                                         .listRequest(request.getListRequest())
                                         .paymentMethod(request.getPaymentMethod())
                                         .client(request.getClient())
+                                        .dateOfRequest(request.getTime())
+                                        .note(request.getNote())
                                         .build();
                                 request.getListRequest()
                                         .forEach(requestPart -> {
@@ -203,8 +211,13 @@ public class RequestServiceImpl implements RequestService {
                                         .mapToDouble(requestPart -> requestPart.getAmount() * requestPart.getProduct().getPrice())
                                         .sum();
                                 order.setFinalPrice(price);
-                                mailSender.send(request.getClient()
-                                        .getEmail(), "Заказ", "Благодарим вас за сделанный вами заказ. Оставайтесь с нами", mailResponses, price, request.getPaymentMethod());
+                                mailSender.sendOrderInformationToClient(request.getClient()
+                                        .getEmail(),
+                                        "Заказ",
+                                        "Благодарим вас за сделанный вами заказ. Оставайтесь с нами",
+                                        mailResponses, price,
+                                        request.getPaymentMethod()
+                                );
                                 orderRepository.save(order);
                                 requestRepository.delete(request);
                             } else {

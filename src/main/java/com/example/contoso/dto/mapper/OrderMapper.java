@@ -1,10 +1,8 @@
 package com.example.contoso.dto.mapper;
 
-import com.example.contoso.dto.request.product.ProductRequest;
 import com.example.contoso.dto.response.order.OrderResponse;
-import com.example.contoso.dto.response.product.ProductResponse;
+import com.example.contoso.dto.response.request.R;
 import com.example.contoso.entity.Order;
-import com.example.contoso.entity.Product;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -22,9 +20,24 @@ public class OrderMapper {
                 .userFullName(order.getUser().getName() + " " + order.getUser().getSurname())
                 .clientEmail(order.getClient().getEmail())
                 .finalPrice(order.getFinalPrice())
-                .listRequest(order.getListRequest())
+                .rList(order.getListRequest().stream().map(requestPart ->
+                                R.builder()
+                                        .reservedAmount(requestPart.getProduct().getReservedAmount())
+                                        .amount(requestPart.getProduct().getAmount())
+                                        .pricePerItem(requestPart.getProduct().getPrice())
+                                        .clientAmount(requestPart.getAmount())
+                                        .code(requestPart.getProduct().getCode())
+                                        .name(requestPart.getProduct().getName())
+                                        .productId(requestPart.getProduct().getId())
+                                        .build()
+                        )
+                        .toList())
                 .paymentMethod(order.getPaymentMethod().getUrl())
-                .status(order.getStatus())
+                .status(order.getStatus().getUrl())
+                .note(order.getNote())
+                .closingDate(order.getClosingDate())
+                .dateOfCreate(order.getDateOfCreated())
+                .dateOfRequest(order.getDateOfRequest())
                 .build();
     }
 

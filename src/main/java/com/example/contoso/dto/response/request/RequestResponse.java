@@ -5,6 +5,7 @@ import com.example.contoso.entity.enums.PaymentMethod;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -24,9 +25,9 @@ public class RequestResponse {
     Integer requestId;
     String clientEmail;
     @JsonFormat(pattern="dd.MM.yyyy")
-    LocalDateTime dateTime;
+    LocalDate dateTime;
     @JsonFormat(pattern="dd.MM.yyyy")
-    Date dateOfDelivery;
+    LocalDate dateOfDelivery;
     String status;
     List<R> rList;
     String note;

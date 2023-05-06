@@ -1,5 +1,6 @@
 package com.example.contoso.dto.response.order;
 
+import com.example.contoso.dto.response.request.R;
 import com.example.contoso.entity.Client;
 import com.example.contoso.entity.RequestPart;
 import com.example.contoso.entity.User;
@@ -8,6 +9,7 @@ import com.example.contoso.entity.enums.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.Builder;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -20,9 +22,14 @@ public record OrderResponse(
         Integer id,
         Double finalPrice,
         String paymentMethod,
-        OrderStatus status,
+        String status,
         String clientEmail,
         String userFullName,
-        List<RequestPart> listRequest
+        List<R> rList,
+        String note,
+        LocalDate dateOfCreate,
+        LocalDate dateOfRequest,
+        LocalDate closingDate
+
 ) {
 }
