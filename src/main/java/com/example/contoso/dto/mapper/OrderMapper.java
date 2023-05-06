@@ -37,7 +37,7 @@ public class OrderMapper {
                 .note(order.getNote())
                 .closingDate(order.getClosingDate())
                 .dateOfCreate(order.getDateOfCreated())
-                .dateOfRequest(order.getDateOfRequest())
+                .dateOfDelivery(order.getDateOfDelivery())
                 .build();
     }
 

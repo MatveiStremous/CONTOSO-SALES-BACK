@@ -40,7 +40,7 @@ public class Order {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<RequestPart> listRequest;
     private LocalDate dateOfCreated;
-    private LocalDate dateOfRequest;
+    private LocalDate dateOfDelivery;
     private LocalDate closingDate;
     @Column(length = 1052)
     private String note;

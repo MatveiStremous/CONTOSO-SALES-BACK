@@ -181,7 +181,7 @@ public class RequestServiceImpl implements RequestService {
                                         .listRequest(request.getListRequest())
                                         .paymentMethod(request.getPaymentMethod())
                                         .client(request.getClient())
-                                        .dateOfRequest(request.getTime())
+                                        .dateOfDelivery(request.getDateOfDelivery())
                                         .note(request.getNote())
                                         .build();
                                 request.getListRequest()
