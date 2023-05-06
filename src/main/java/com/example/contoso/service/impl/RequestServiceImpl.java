@@ -191,7 +191,7 @@ public class RequestServiceImpl implements RequestService {
                                              */
                                             Product product = requestPart.getProduct();
                                             if (product.getAmount() - requestPart.getAmount() >= 0) {
-                                                product.setReservedAmount(requestPart.getAmount());
+                                                product.setReservedAmount(requestPart.getAmount() + product.getReservedAmount());
                                                 productRepository.save(product);
                                             } else {
                                                 throw new BusinessException("Количество единиц продукта на складе меньше, чем требуется в заказе. Попробуйте пополнить склад для проведения операции",
