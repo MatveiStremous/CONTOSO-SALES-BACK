@@ -102,7 +102,7 @@ public class RequestServiceImpl implements RequestService {
                             .dateOfDelivery(requestRequest.getDateOfDelivery())
                             .note(requestRequest.getNote())
                             .time(request.getTime())
-                            .paymentMethod(request.getPaymentMethod())
+                            .paymentMethod(requestRequest.getPaymentMethod())
                             .listRequest(requestParts)
                             .client(request.getClient())
                             .note(requestRequest.getNote())
