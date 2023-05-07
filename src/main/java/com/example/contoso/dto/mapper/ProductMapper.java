@@ -32,6 +32,7 @@ public class ProductMapper {
                 .reservedAmount(productRequest.getReservedAmount())
                 .name(productRequest.getName())
                 .price(productRequest.getPrice())
+                .isActive(true)
                 .build();
     }
 }

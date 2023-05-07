@@ -31,7 +31,18 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void addProduct(ProductRequest productRequest) {
         Optional<Product> product = productRepository.findByCode(productRequest.getCode());
-        if (product.isEmpty()) {
+        if (product.get().getCode().equals(productRequest.getCode()) && !product.get().isActive()) {
+            productRepository.save(Product.builder()
+                            .id(product.get().getId())
+                            .isActive(true)
+                            .name(productRequest.getName())
+                            .price(productRequest.getPrice())
+                            .reservedAmount(0)
+                            .amount(product.get().getAmount())
+                            .code(productRequest.getCode())
+                    .build());
+        }
+        else if (product.isEmpty()) {
             productRepository.save(productMapper.toProduct(productRequest));
         } else {
             throw new BusinessException(String.format(ALREADY_EXIST, productRequest.getCode()),
@@ -41,9 +52,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProductById(Integer id) {
-        //TODO: если количество зарезервированное > 0 -> exception товар не может быть удален так как он находится у кого-то в резерве
         productRepository.findById(id)
-                .ifPresentOrElse(productRepository::delete,
+                .ifPresentOrElse(product -> {
+                            if (product.getReservedAmount() > 0) {
+                                throw new BusinessException("Вы не можете удалить товар, так как определенное количество находится в резерве", HttpStatus.FORBIDDEN);
+                            } else {
+                                product.setActive(false);
+                                productRepository.save(product);
+                            }
+                        },
                         () -> {
                             throw new BusinessException(String.format(NOT_FOUND, id), HttpStatus.NOT_FOUND);
                         });

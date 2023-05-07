@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @ToString
-public class Product {
+public class    Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -27,6 +27,6 @@ public class Product {
     private int reservedAmount;
     private int amount;
     private Double price;
-//    private boolean isActive;
+    private boolean isActive;
 
 }
