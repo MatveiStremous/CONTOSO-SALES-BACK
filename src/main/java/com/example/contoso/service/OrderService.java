@@ -18,4 +18,5 @@ public interface OrderService {
 
     void cancelOrder(CancelOrderRequest cancelOrder);
 
+    List<OrderResponse> getAllById(Integer id);
 }

@@ -17,5 +17,5 @@ public interface StatisticService {
     List<ProfitResponse> getProfitFor(LocalDate from, LocalDate to);
     List<FailedSuccessResponse> getFailedSuccessOrders(LocalDate from, LocalDate to);
     List<MostActiveBuyersResponse> getTheMostActiveBuyers();
-
+    List<MostPopularItemResponse> getTheMostPopularItem();
 }

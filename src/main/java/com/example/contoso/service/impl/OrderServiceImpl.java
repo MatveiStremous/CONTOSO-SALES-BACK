@@ -11,6 +11,7 @@ import com.example.contoso.repository.ProductRepository;
 import com.example.contoso.service.DiscountService;
 import com.example.contoso.service.OrderService;
 import com.example.contoso.utils.MailSender;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -106,5 +107,13 @@ public class OrderServiceImpl implements OrderService {
                 }, () -> {
                     throw new BusinessException("Заказ не найден", HttpStatus.NOT_FOUND);
                 });
+    }
+
+    @Override
+    public List<OrderResponse> getAllById(Integer id) {
+        return orderRepository.findAllByUserId(id)
+                .stream()
+                .map(orderMapper::toResponseDto)
+                .toList();
     }
 }

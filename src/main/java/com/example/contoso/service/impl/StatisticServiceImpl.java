@@ -4,7 +4,6 @@ import com.example.contoso.dto.response.FailedSuccessResponse;
 import com.example.contoso.dto.response.MostActiveBuyersResponse;
 import com.example.contoso.dto.response.MostPopularItemResponse;
 import com.example.contoso.dto.response.ProfitResponse;
-import com.example.contoso.entity.Client;
 import com.example.contoso.entity.Order;
 import com.example.contoso.entity.enums.OrderStatus;
 import com.example.contoso.exception.type.BusinessException;
@@ -85,6 +84,38 @@ public class StatisticServiceImpl implements StatisticService {
                 .sorted(Comparator.comparing(MostActiveBuyersResponse::value))
                 .toList();
     }
+
+    @Override
+    public List<MostPopularItemResponse> getTheMostPopularItem() {
+        final int MAX_ITEMS = 10;
+        return orderRepository.findAll()
+                .stream()
+                .filter(order -> order.getStatus()
+                        .equals(OrderStatus.COMPLETED))
+                .map(Order::getListRequest)
+                .map(requestParts -> requestParts
+                        .stream()
+                        .collect(Collectors.groupingBy(requestPart -> requestPart.getProduct().getName(), Collectors.counting()))
+                        .entrySet()
+                        .stream()
+                        .map(stringLongEntry -> MostPopularItemResponse.builder()
+                                .key(stringLongEntry.getKey())
+                                .value(stringLongEntry.getValue())
+                                .build())
+                        .limit(MAX_ITEMS)
+                        .toList())
+                .flatMap(Collection::stream)
+                .collect(Collectors.groupingBy(MostPopularItemResponse::key, Collectors.counting()))
+                .entrySet()
+                .stream()
+                .map(stringLongEntry -> MostPopularItemResponse.builder()
+                        .key(stringLongEntry.getKey())
+                        .value(stringLongEntry.getValue())
+                        .build())
+                .sorted(Comparator.comparing(MostPopularItemResponse::value))
+                .toList();
+    }
+
 
     private void checkDate(LocalDate from, LocalDate to) {
         if (from.isAfter(to)) {

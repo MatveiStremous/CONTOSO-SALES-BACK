@@ -10,6 +10,6 @@ import lombok.Builder;
 @Builder
 public record MostPopularItemResponse (
         String key,
-        Integer value
+        Long value
 ) {
 }

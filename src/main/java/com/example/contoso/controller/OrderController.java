@@ -34,4 +34,10 @@ public class OrderController {
                 .body(orderService.getAll());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<List<OrderResponse>> getAllById(@PathVariable Integer id) {
+        return ResponseEntity.ok()
+                .body(orderService.getAllById(id));
+    }
+
 }
