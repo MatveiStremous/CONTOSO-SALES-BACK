@@ -2,12 +2,18 @@ package com.example.contoso.controller;
 
 import com.example.contoso.dto.request.order.CancelOrderRequest;
 import com.example.contoso.dto.request.user.UserRequest;
+import com.example.contoso.dto.response.FailedSuccessResponse;
+import com.example.contoso.dto.response.MostActiveBuyersResponse;
+import com.example.contoso.dto.response.MostPopularItemResponse;
+import com.example.contoso.dto.response.ProfitResponse;
 import com.example.contoso.dto.response.request.RequestResponse;
 import com.example.contoso.dto.response.user.UserResponse;
 import com.example.contoso.entity.enums.StatusOfRequest;
 import com.example.contoso.service.OrderService;
 import com.example.contoso.service.RequestService;
+import com.example.contoso.service.StatisticService;
 import com.example.contoso.service.UserService;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -15,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -29,6 +36,7 @@ public class AdminController {
     private final UserService userService;
     private final RequestService requestService;
     private final OrderService orderService;
+    private final StatisticService statisticService;
 
     @PostMapping("/registration")
     public ResponseEntity<String> register(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
@@ -75,5 +83,31 @@ public class AdminController {
     public ResponseEntity<String> updateByRequestStatus(@RequestBody CancelOrderRequest cancelOrder) {
         orderService.cancelOrder(cancelOrder);
         return ResponseEntity.ok("Успешно отклонен");
+    }
+
+    @GetMapping("profit/{from}/{to}")
+    public ResponseEntity<List<ProfitResponse>> getProfitFor(@PathVariable @JsonFormat(pattern = "yyyy-MM-dd") LocalDate from,
+                                                       @PathVariable @JsonFormat(pattern = "yyyy-MM-dd") LocalDate to) {
+        return ResponseEntity.ok()
+                .body(statisticService.getProfitFor(from, to));
+    }
+
+    @GetMapping("failed-success/{from}/{to}")
+    public ResponseEntity<List<FailedSuccessResponse>> getFailedSuccessOrders(@PathVariable @JsonFormat(pattern = "yyyy-MM-dd") LocalDate from,
+                                                                    @PathVariable @JsonFormat(pattern = "yyyy-MM-dd") LocalDate to) {
+        return ResponseEntity.ok()
+                .body(statisticService.getFailedSuccessOrders(from, to));
+    }
+
+    @GetMapping("most-active-buyers")
+    public ResponseEntity<List<MostActiveBuyersResponse>> getTheMostActiveBuyers() {
+        return ResponseEntity.ok()
+                .body(statisticService.getTheMostActiveBuyers());
+    }
+
+    @GetMapping("most-popular-items")
+    public ResponseEntity<List<MostPopularItemResponse>> getTheMostPopularItem() {
+        return ResponseEntity.ok()
+                .body(statisticService.getTheMostPopularItem());
     }
 }

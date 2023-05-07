@@ -8,6 +8,7 @@ import com.example.contoso.entity.enums.OrderStatus;
 import com.example.contoso.exception.type.BusinessException;
 import com.example.contoso.repository.OrderRepository;
 import com.example.contoso.repository.ProductRepository;
+import com.example.contoso.service.DiscountService;
 import com.example.contoso.service.OrderService;
 import com.example.contoso.utils.MailSender;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import java.util.Objects;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final DiscountService discountService;
     private final ProductRepository productRepository;
     private final OrderMapper orderMapper;
     private final MailSender mailSender;
@@ -57,13 +59,14 @@ public class OrderServiceImpl implements OrderService {
                         order.setClosingDate(LocalDate.now());
                         order.setStatus(OrderStatus.COMPLETED);
                         orderRepository.save(order);
+                        discountService.updateDiscount(order.getClient().getId());
                     } else {
                         order.getListRequest()
                                 .forEach(requestPart -> {
                                     Product product = requestPart.getProduct();
                                     int amountOfOrder = requestPart.getAmount();
                                     int reservedAmount = product.getReservedAmount();
-                                    product.setReservedAmount(reservedAmount + amountOfOrder);
+                                    product.setReservedAmount(reservedAmount - amountOfOrder);
                                     productRepository.save(product);
                                 });
                         order.setStatus(OrderStatus.CANCELLED);
@@ -91,10 +94,10 @@ public class OrderServiceImpl implements OrderService {
                                 Product product = requestPart.getProduct();
                                 int amountOfOrder = requestPart.getAmount();
                                 int reservedAmount = product.getReservedAmount();
-                                product.setReservedAmount(reservedAmount + amountOfOrder);
+                                product.setReservedAmount(reservedAmount - amountOfOrder);
                                 productRepository.save(product);
                             });
-                    order.setStatus(OrderStatus.CANCELLED);
+                    order.setStatus(OrderStatus.REJECTED);
                     orderRepository.save(order);
                     mailSender.sendMessage(order.getClient()
                             .getEmail(),

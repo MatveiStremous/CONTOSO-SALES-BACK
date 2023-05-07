@@ -22,6 +22,7 @@ public class ClientMapper {
                 .name(client.getName())
                 .dateOfRegistration(client.getDateOfRegistration())
                 .phoneNumber(client.getPhoneNumber())
+                .discount(client.getDiscount().getDiscountType())
                 .build();
     }
 

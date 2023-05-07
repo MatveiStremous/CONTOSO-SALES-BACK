@@ -1,8 +1,12 @@
 package com.example.contoso.dto.mapper;
 
+import com.example.contoso.dto.request.product.ProductRequest;
 import com.example.contoso.dto.response.order.OrderResponse;
 import com.example.contoso.dto.response.request.R;
 import com.example.contoso.entity.Order;
+import com.example.contoso.entity.Product;
+import com.example.contoso.entity.Request;
+import com.example.contoso.entity.enums.OrderStatus;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +42,18 @@ public class OrderMapper {
                 .closingDate(order.getClosingDate())
                 .dateOfCreate(order.getDateOfCreated())
                 .dateOfDelivery(order.getDateOfDelivery())
+                .build();
+    }
+
+    public Order toOrder(Request request, OrderStatus orderStatus) {
+        return Order.builder()
+                .status(orderStatus)
+                .user(request.getUser())
+                .listRequest(request.getListRequest())
+                .paymentMethod(request.getPaymentMethod())
+                .client(request.getClient())
+                .dateOfDelivery(request.getDateOfDelivery())
+                .note(request.getNote())
                 .build();
     }
 

@@ -1,5 +1,7 @@
 package com.example.contoso.service.impl;
 
+import com.example.contoso.dto.mapper.OrderMapper;
+import com.example.contoso.dto.mapper.RequestMapper;
 import com.example.contoso.dto.request.request.RequestRequest;
 import com.example.contoso.dto.response.MailResponse;
 import com.example.contoso.dto.response.request.R;
@@ -9,13 +11,16 @@ import com.example.contoso.entity.enums.OrderStatus;
 import com.example.contoso.entity.enums.StatusOfRequest;
 import com.example.contoso.exception.type.BusinessException;
 import com.example.contoso.repository.*;
+import com.example.contoso.service.DiscountService;
 import com.example.contoso.service.RequestService;
 import com.example.contoso.utils.MailSender;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.nio.DoubleBuffer;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -35,6 +40,9 @@ public class RequestServiceImpl implements RequestService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final MailSender mailSender;
+    private final DiscountService discountService;
+    private final OrderMapper orderMapper;
+    private final RequestMapper requestMapper;
 
     private static final String NOT_FOUND = "Продукт с id %s не найден.";
     private static final String CLIENT_NOT_FOUND = "Клиент с id %s не найден.";
@@ -61,16 +69,8 @@ public class RequestServiceImpl implements RequestService {
         Optional<User> user = userRepository.findById(requestRequest.getUserId());
         Optional<Client> client = clientRepository.findById(requestRequest.getClientId());
         if (client.isPresent() && user.isPresent()) {
-            Request build = Request.builder()
-                    .status(StatusOfRequest.DECORATED)
-                    .user(user.get())
-                    .dateOfDelivery(requestRequest.getDateOfDelivery())
-                    .note(requestRequest.getNote())
-                    .listRequest(requestLists)
-                    .paymentMethod(requestRequest.getPaymentMethod())
-                    .client(client.get())
-                    .build();
-            requestRepository.save(build);
+            Request request = requestMapper.toRequest(requestRequest, user.get(), client.get(), StatusOfRequest.DECORATED, requestLists);
+            requestRepository.save(request);
         } else if (client.isEmpty()) {
             throw new BusinessException(String.format(CLIENT_NOT_FOUND, requestRequest.getClientId()), HttpStatus.NOT_FOUND);
         } else {
@@ -95,7 +95,7 @@ public class RequestServiceImpl implements RequestService {
                             .toList();
                     User user = userRepository.findById(requestRequest.getUserId())
                             .orElseThrow(() -> new BusinessException(MANAGER_NOT_FOUND, HttpStatus.NOT_FOUND));
-                    Request build = Request.builder()
+                    Request buildRequest = Request.builder()
                             .id(request.getId())
                             .status(StatusOfRequest.DECORATED)
                             .user(user)
@@ -107,7 +107,7 @@ public class RequestServiceImpl implements RequestService {
                             .client(request.getClient())
                             .note(requestRequest.getNote())
                             .build();
-                    requestRepository.save(build);
+                    requestRepository.save(buildRequest);
                 }, () -> {
                     throw new BusinessException(String.format(CODE_NOT_FOUND, id), HttpStatus.NOT_FOUND);
                 });
@@ -135,31 +135,7 @@ public class RequestServiceImpl implements RequestService {
     public List<RequestResponse> getById(Integer id) {
         return requestRepository.findAllByUserId(id)
                 .stream()
-                .map(request ->
-                        RequestResponse.builder()
-                                .requestId(request.getId())
-                                .clientEmail(request.getClient().getEmail())
-                                .status(request.getStatus().getUrl())
-                                .dateTime(request.getTime())
-                                .dateOfDelivery(request.getDateOfDelivery())
-                                .note(request.getNote())
-                                .paymentMethod(request.getPaymentMethod().getUrl())
-                                .rList(request.getListRequest()
-                                        .stream()
-                                        .map(requestPart ->
-                                                R.builder()
-                                                        .reservedAmount(requestPart.getProduct().getReservedAmount())
-                                                        .amount(requestPart.getProduct().getAmount())
-                                                        .pricePerItem(requestPart.getProduct().getPrice())
-                                                        .clientAmount(requestPart.getAmount())
-                                                        .code(requestPart.getProduct().getCode())
-                                                        .name(requestPart.getProduct().getName())
-                                                        .productId(requestPart.getProduct().getId())
-                                                        .build()
-                                        )
-                                        .toList())
-                                .build()
-                )
+                .map(requestMapper::toResponseDto)
                 .toList();
     }
 
@@ -175,15 +151,8 @@ public class RequestServiceImpl implements RequestService {
                                                 + request.getId()
                                                 + " успешно перешла в стадию закаказа. Благодарим вас за проделанную работу!"
                                 );
-                                Order order = Order.builder()
-                                        .status(OrderStatus.DECORATED)
-                                        .user(request.getUser())
-                                        .listRequest(request.getListRequest())
-                                        .paymentMethod(request.getPaymentMethod())
-                                        .client(request.getClient())
-                                        .dateOfDelivery(request.getDateOfDelivery())
-                                        .note(request.getNote())
-                                        .build();
+                                Order order = orderMapper.toOrder(request, OrderStatus.DECORATED);
+
                                 request.getListRequest()
                                         .forEach(requestPart -> {
                                             /**
@@ -198,26 +167,12 @@ public class RequestServiceImpl implements RequestService {
                                                         HttpStatus.FORBIDDEN);
                                             }
                                         });
-                                List<MailResponse> mailResponses = request.getListRequest()
-                                        .stream()
-                                        .map(requestPart -> MailResponse.builder()
-                                                .productAmount(requestPart.getAmount())
-                                                .productName(requestPart.getProduct().getName())
-                                                .price(requestPart.getAmount() * requestPart.getProduct().getPrice())
-                                                .build())
-                                        .toList();
-                                Double price = request.getListRequest()
-                                        .stream()
-                                        .mapToDouble(requestPart -> requestPart.getAmount() * requestPart.getProduct().getPrice())
-                                        .sum();
-                                order.setFinalPrice(price);
-                                mailSender.sendOrderInformationToClient(request.getClient()
-                                        .getEmail(),
-                                        "Заказ",
-                                        "Благодарим вас за сделанный вами заказ. Оставайтесь с нами",
-                                        mailResponses, price,
-                                        request.getPaymentMethod()
-                                );
+
+                                Integer discount = discountService.getDiscount(request.getClient().getId());
+                                Double price = getPrice(request);
+                                Double finalPrice = getFinalPrice(discount, price);
+                                order.setFinalPrice(finalPrice);
+                                fillMessage(request, finalPrice, discount, price);
                                 orderRepository.save(order);
                                 requestRepository.delete(request);
                             } else {
@@ -236,30 +191,44 @@ public class RequestServiceImpl implements RequestService {
                 .stream()
                 .filter(request -> request.getStatus()
                         .equals(StatusOfRequest.DECORATED))
-                .map(request -> RequestResponse.builder()
-                        .requestId(request.getId())
-                        .clientEmail(request.getClient().getEmail())
-                        .status(request.getStatus().getUrl())
-                        .dateTime(request.getTime())
-                        .dateOfDelivery(request.getDateOfDelivery())
-                        .note(request.getNote())
-                        .paymentMethod(request.getPaymentMethod().getUrl())
-                        .fullName(request.getUser().getName() + " " + request.getUser().getSurname())
-                        .rList(request.getListRequest()
-                                .stream()
-                                .map(requestPart ->
-                                        R.builder()
-                                                .reservedAmount(requestPart.getProduct().getReservedAmount())
-                                                .amount(requestPart.getProduct().getAmount())
-                                                .pricePerItem(requestPart.getProduct().getPrice())
-                                                .clientAmount(requestPart.getAmount())
-                                                .code(requestPart.getProduct().getCode())
-                                                .name(requestPart.getProduct().getName())
-                                                .productId(requestPart.getProduct().getId())
-                                                .build()
-                                )
-                                .toList())
+                .map(requestMapper::toResponseDto)
+                .toList();
+    }
+
+
+    private void fillMessage(Request request, Double finalPrice, Integer discount, Double price) {
+        mailSender.sendOrderInformationToClient(request.getClient()
+                .getEmail(),
+                "Заказ",
+                "Благодарим вас за сделанный вами заказ. Оставайтесь с нами",
+                getMailResponses(request),
+                finalPrice,
+                price,
+                discount,
+                request.getPaymentMethod()
+        );
+    }
+
+    private  List<MailResponse> getMailResponses(Request request) {
+        return request.getListRequest()
+                .stream()
+                .map(requestPart -> MailResponse.builder()
+                        .productAmount(requestPart.getAmount())
+                        .productName(requestPart.getProduct().getName())
+                        .price(requestPart.getAmount() * requestPart.getProduct().getPrice())
                         .build())
                 .toList();
     }
+
+    private Double getFinalPrice(Integer discount, Double price) {
+        return price - (price * discount / 100);
+    }
+
+    private Double getPrice(Request request) {
+        return request.getListRequest()
+                .stream()
+                .mapToDouble(requestPart -> requestPart.getAmount() * requestPart.getProduct().getPrice())
+                .sum();
+    }
+
 }

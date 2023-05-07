@@ -56,7 +56,14 @@ public class MailSender {
         mailSender.send(messageTo);
     }
 
-    public void sendOrderInformationToClient(String emailTo, String subject, String message, List<MailResponse> mailResponseList, Double price, PaymentMethod paymentMethod) {
+    public void sendOrderInformationToClient(String emailTo,
+                                             String subject,
+                                             String message,
+                                             List<MailResponse> mailResponseList,
+                                             Double finalPrice,
+                                             Double price,
+                                             Integer discount,
+                                             PaymentMethod paymentMethod) {
         MimeMessage messageTo = mailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(messageTo, true, "UTF-8");
@@ -90,7 +97,9 @@ public class MailSender {
 
             html += "      </table>\n" +
                     "      <div class=\"total\">\n" +
-                    "        Итоговая стоимость: " + price + "\n" +
+                    "        Cтоимость: " + price + "\n руб.<br>" +
+                    "        Ваша скидка составляет: " + discount + "\n %<br>" +
+                    "        Итоговая стоимость: " + finalPrice + "\nруб." +
                     "      </div>\n" +
                     "      <div class=\"payment-method\">\n" +
                     "        <label>Способ оплаты:\n" +

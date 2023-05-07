@@ -32,7 +32,7 @@ public class Client {
     private List<Order> orders;
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Request> requests;
-    @OneToOne(mappedBy = "client")
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Discount discount;
 
     @PrePersist

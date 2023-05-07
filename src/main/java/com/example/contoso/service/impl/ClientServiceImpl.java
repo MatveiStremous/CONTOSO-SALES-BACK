@@ -1,6 +1,8 @@
 package com.example.contoso.service.impl;
 
 import com.example.contoso.dto.request.client.MessageRequest;
+import com.example.contoso.entity.Discount;
+import com.example.contoso.repository.DiscountRepository;
 import com.example.contoso.utils.MailSender;
 import com.example.contoso.dto.mapper.ClientMapper;
 import com.example.contoso.dto.request.client.ClientRequest;
@@ -28,6 +30,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
+    private final DiscountRepository discountRepository;
     private final ClientMapper clientMapper;
     private final MailSender mailSender;
     private static final String ALREADY_EXIST = "Клиент с почтой: %s уже существует.";
@@ -37,7 +40,12 @@ public class ClientServiceImpl implements ClientService {
     public void addClient(ClientRequest clientRequest) {
         Optional<Client> client = clientRepository.findByEmail(clientRequest.getEmail());
         if (client.isEmpty()) {
-            clientRepository.save(clientMapper.toClient(clientRequest, null));
+            Client savedClient = clientRepository.save(clientMapper.toClient(clientRequest, null));
+            discountRepository.save(Discount.builder()
+                    .client(savedClient)
+                    .discountType(3)
+                    .build()
+            );
         } else {
             throw new BusinessException(String.format(ALREADY_EXIST, clientRequest.getEmail()),
                     HttpStatus.NOT_FOUND);

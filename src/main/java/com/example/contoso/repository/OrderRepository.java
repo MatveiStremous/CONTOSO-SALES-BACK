@@ -1,8 +1,12 @@
 package com.example.contoso.repository;
 
+import com.example.contoso.entity.Client;
 import com.example.contoso.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * @author Neevels
@@ -11,4 +15,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
+    List<Order> findAllByClient(Client client);
+    List<Order> findAllByClosingDate(LocalDate closingDate);
+    List<Order> findAllByClosingDateBetween(LocalDate from, LocalDate to);
 }

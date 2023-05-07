@@ -16,6 +16,7 @@ public record ClientResponse(
         String email,
         String address,
         String phoneNumber,
-        LocalDateTime dateOfRegistration
+        LocalDateTime dateOfRegistration,
+        Integer discount
 ) {
 }
