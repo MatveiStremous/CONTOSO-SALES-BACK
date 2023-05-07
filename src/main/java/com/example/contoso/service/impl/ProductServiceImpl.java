@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -96,6 +97,7 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductResponse> getAll() {
         return productRepository.findAll()
                 .stream()
+                .filter(product -> Objects.equals(product.isActive(), true))
                 .map(productMapper::toResponseDto)
                 .toList();
     }
