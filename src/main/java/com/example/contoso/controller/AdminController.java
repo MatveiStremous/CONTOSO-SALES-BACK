@@ -2,10 +2,10 @@ package com.example.contoso.controller;
 
 import com.example.contoso.dto.request.order.CancelOrderRequest;
 import com.example.contoso.dto.request.user.UserRequest;
-import com.example.contoso.dto.response.FailedSuccessResponse;
-import com.example.contoso.dto.response.MostActiveBuyersResponse;
-import com.example.contoso.dto.response.MostPopularItemResponse;
-import com.example.contoso.dto.response.ProfitResponse;
+import com.example.contoso.dto.response.statistic.FailedSuccessResponse;
+import com.example.contoso.dto.response.statistic.MostActiveBuyersResponse;
+import com.example.contoso.dto.response.statistic.MostPopularItemResponse;
+import com.example.contoso.dto.response.statistic.ProfitResponse;
 import com.example.contoso.dto.response.request.RequestResponse;
 import com.example.contoso.dto.response.user.UserResponse;
 import com.example.contoso.entity.enums.StatusOfRequest;
@@ -94,7 +94,7 @@ public class AdminController {
 
     @GetMapping("failed-success/{from}/{to}")
     public ResponseEntity<List<FailedSuccessResponse>> getFailedSuccessOrders(@PathVariable @JsonFormat(pattern = "yyyy-MM-dd") LocalDate from,
-                                                                    @PathVariable @JsonFormat(pattern = "yyyy-MM-dd") LocalDate to) {
+                                                                              @PathVariable @JsonFormat(pattern = "yyyy-MM-dd") LocalDate to) {
         return ResponseEntity.ok()
                 .body(statisticService.getFailedSuccessOrders(from, to));
     }

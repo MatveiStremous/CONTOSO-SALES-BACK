@@ -1,4 +1,4 @@
-package com.example.contoso.dto.response;
+package com.example.contoso.dto.response.statistic;
 
 import com.example.contoso.entity.enums.OrderStatus;
 import lombok.Builder;

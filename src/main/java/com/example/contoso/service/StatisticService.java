@@ -1,9 +1,9 @@
 package com.example.contoso.service;
 
-import com.example.contoso.dto.response.MostActiveBuyersResponse;
-import com.example.contoso.dto.response.MostPopularItemResponse;
-import com.example.contoso.dto.response.ProfitResponse;
-import com.example.contoso.dto.response.FailedSuccessResponse;
+import com.example.contoso.dto.response.statistic.FailedSuccessResponse;
+import com.example.contoso.dto.response.statistic.MostActiveBuyersResponse;
+import com.example.contoso.dto.response.statistic.MostPopularItemResponse;
+import com.example.contoso.dto.response.statistic.ProfitResponse;
 
 import java.time.LocalDate;
 import java.util.List;
