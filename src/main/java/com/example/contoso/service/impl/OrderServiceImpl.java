@@ -99,6 +99,7 @@ public class OrderServiceImpl implements OrderService {
                                 productRepository.save(product);
                             });
                     order.setStatus(OrderStatus.REJECTED);
+                    order.setClosingDate(LocalDate.now());
                     orderRepository.save(order);
                     mailSender.sendMessage(order.getClient()
                             .getEmail(),

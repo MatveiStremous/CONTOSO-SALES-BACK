@@ -10,7 +10,7 @@ import lombok.Builder;
  */
 @Builder
 public record FailedSuccessResponse (
-        OrderStatus key,
+        String key,
         Integer value
 ) {
 }

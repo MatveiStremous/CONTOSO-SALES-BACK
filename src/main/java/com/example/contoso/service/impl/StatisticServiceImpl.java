@@ -58,7 +58,7 @@ public class StatisticServiceImpl implements StatisticService {
                                             .equals(orderStatus))
                                     .count();
                             return FailedSuccessResponse.builder()
-                                    .key(orderStatus)
+                                    .key(orderStatus.getUrl())
                                     .value(count)
                                     .build();
                         }
