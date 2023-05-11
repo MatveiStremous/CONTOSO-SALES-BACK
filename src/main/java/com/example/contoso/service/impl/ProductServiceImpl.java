@@ -34,24 +34,26 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void addProduct(ProductRequest productRequest) {
-        productRepository.findByCode(productRequest.getCode()).ifPresentOrElse(product -> {
-            if (product.getCode().equals(productRequest.getCode()) && !product.isActive()) {
-                productRepository.save(Product.builder()
-                        .id(product.getId())
-                        .isActive(true)
-                        .name(productRequest.getName())
-                        .price(productRequest.getPrice())
-                        .reservedAmount(0)
-                        .amount(product.getAmount())
-                        .code(productRequest.getCode())
-                        .build());
-            } else {
-                throw new BusinessException(String.format(ALREADY_EXIST, productRequest.getCode()),
-                        HttpStatus.NOT_FOUND);
-            }
-        } , () -> {
-            productRepository.save(productMapper.toProduct(productRequest));
-        });
+        productRepository.findByCode(productRequest.getCode())
+                .ifPresentOrElse(product -> {
+                    if (product.getCode()
+                            .equals(productRequest.getCode()) && !product.isActive()) {
+                        productRepository.save(Product.builder()
+                                .id(product.getId())
+                                .isActive(true)
+                                .name(productRequest.getName())
+                                .price(productRequest.getPrice())
+                                .reservedAmount(0)
+                                .amount(product.getAmount())
+                                .code(productRequest.getCode())
+                                .build());
+                    } else {
+                        throw new BusinessException(String.format(ALREADY_EXIST, productRequest.getCode()),
+                                HttpStatus.NOT_FOUND);
+                    }
+                }, () -> {
+                    productRepository.save(productMapper.toProduct(productRequest));
+                });
     }
 
     @Override
@@ -154,13 +156,11 @@ public class ProductServiceImpl implements ProductService {
                                             item.setReservedAmount(0);
                                             productRepository.save(item);
                                         } else {
-                                            throw new BusinessException(String.format(ALREADY_EXIST, item.getCode()),
-                                                    HttpStatus.NOT_FOUND);
+                                            item.setAmount(item.getAmount() + data.getAmount());
+                                            productRepository.save(item);
                                         }
                                     },
-                                    () ->{
-                                        articles.add(data.getCode());
-                                    }
+                                    () -> articles.add(data.getCode())
                             );
 
                 });
