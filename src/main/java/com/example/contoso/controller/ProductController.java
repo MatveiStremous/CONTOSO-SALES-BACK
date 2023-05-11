@@ -7,6 +7,7 @@ import com.example.contoso.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -53,5 +54,9 @@ public class ProductController {
         return ResponseEntity.ok("Продукт успешно обновлен!");
     }
 
-
+    @PutMapping("uploadExcel")
+    public ResponseEntity<String> updateProduct(@RequestParam("file") MultipartFile file) {
+        productService.updateProductAmountViaExcelFile(file);
+        return ResponseEntity.ok("Продукт успешно обновлен!");
+    }
 }

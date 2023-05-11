@@ -7,13 +7,15 @@ import com.example.contoso.entity.Product;
 import com.example.contoso.exception.type.BusinessException;
 import com.example.contoso.repository.ProductRepository;
 import com.example.contoso.service.ProductService;
+import com.example.contoso.utils.FileData;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @author Neevels
@@ -31,24 +33,24 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void addProduct(ProductRequest productRequest) {
-        Optional<Product> product = productRepository.findByCode(productRequest.getCode());
-        if (product.get().getCode().equals(productRequest.getCode()) && !product.get().isActive()) {
-            productRepository.save(Product.builder()
-                            .id(product.get().getId())
-                            .isActive(true)
-                            .name(productRequest.getName())
-                            .price(productRequest.getPrice())
-                            .reservedAmount(0)
-                            .amount(product.get().getAmount())
-                            .code(productRequest.getCode())
-                    .build());
-        }
-        else if (product.isEmpty()) {
+        productRepository.findByCode(productRequest.getCode()).ifPresentOrElse(product -> {
+            if (product.getCode().equals(productRequest.getCode()) && !product.isActive()) {
+                productRepository.save(Product.builder()
+                        .id(product.getId())
+                        .isActive(true)
+                        .name(productRequest.getName())
+                        .price(productRequest.getPrice())
+                        .reservedAmount(0)
+                        .amount(product.getAmount())
+                        .code(productRequest.getCode())
+                        .build());
+            } else {
+                throw new BusinessException(String.format(ALREADY_EXIST, productRequest.getCode()),
+                        HttpStatus.NOT_FOUND);
+            }
+        } , () -> {
             productRepository.save(productMapper.toProduct(productRequest));
-        } else {
-            throw new BusinessException(String.format(ALREADY_EXIST, productRequest.getCode()),
-                    HttpStatus.NOT_FOUND);
-        }
+        });
     }
 
     @Override
@@ -112,6 +114,50 @@ public class ProductServiceImpl implements ProductService {
                         () -> {
                             throw new BusinessException(String.format(NOT_FOUND, id), HttpStatus.NOT_FOUND);
                         });
+    }
+
+    @Override
+    public void updateProductAmountViaExcelFile(MultipartFile file) {
+        Workbook workbook = null;
+        List<FileData> fileData = new ArrayList<>();
+        try {
+            workbook = WorkbookFactory.create(file.getInputStream());
+            Sheet sheet = workbook.getSheetAt(0);
+
+            for (Row row : sheet) {
+                Cell firstCell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                Cell secondCell = row.getCell(1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                fileData.add(FileData.builder()
+                        .code(firstCell.getStringCellValue())
+                        .amount((int) secondCell.getNumericCellValue())
+                        .build());
+            }
+            workbook.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        updateAllProducts(fileData);
+    }
+
+    private void updateAllProducts(List<FileData> fileData) {
+        List<String> articles = new ArrayList<>();
+
+        fileData
+                .forEach(data -> {
+                    productRepository.findByCode(data.getCode())
+                            .ifPresentOrElse(item -> {
+                                        item.setAmount(item.getAmount() + data.getAmount());
+                                        productRepository.save(item);
+                                    },
+                                    () -> articles.add(data.getCode())
+                            );
+
+                });
+        if (!articles.isEmpty()) {
+            throw new BusinessException("Товаров со следующими артикулами: " + articles + " не существует!",
+                    HttpStatus.NOT_IMPLEMENTED);
+        }
     }
 
 }

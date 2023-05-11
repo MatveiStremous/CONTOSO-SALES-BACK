@@ -2,6 +2,7 @@ package com.example.contoso.service;
 
 import com.example.contoso.dto.request.product.ProductRequest;
 import com.example.contoso.dto.response.product.ProductResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,4 +18,7 @@ public interface ProductService {
     List<ProductResponse> getAll();
 
     void updateProductAmount(Integer amount, Integer id);
+
+    void updateProductAmountViaExcelFile(MultipartFile file);
+
 }

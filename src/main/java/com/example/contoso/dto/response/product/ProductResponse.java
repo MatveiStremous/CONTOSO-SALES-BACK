@@ -11,7 +11,7 @@ import lombok.Builder;
 public record ProductResponse(
         Integer id,
         String name,
-        Integer code,
+        String code,
         Integer reservedAmount,
         Integer amount,
         Double price

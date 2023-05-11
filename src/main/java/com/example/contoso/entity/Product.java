@@ -23,7 +23,7 @@ public class    Product {
     private Integer id;
     private String name;
     @Column(unique = true)
-    private Integer code;
+    private String code;
     private int reservedAmount;
     private int amount;
     private Double price;

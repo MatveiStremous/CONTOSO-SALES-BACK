@@ -16,7 +16,7 @@ import lombok.*;
 public class R {
     private Integer productId;
     private String name;
-    private Integer code;
+    private String code;
     private Integer amount;
     private Integer clientAmount;
     private Integer reservedAmount;

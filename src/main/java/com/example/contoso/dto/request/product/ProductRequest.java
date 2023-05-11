@@ -16,7 +16,7 @@ import lombok.*;
 public class ProductRequest {
     private String name;
     //TODO: code should have 6 digits
-    private Integer code;
+    private String code;
     private int reservedAmount;
     private int amount;
     private Double price;
