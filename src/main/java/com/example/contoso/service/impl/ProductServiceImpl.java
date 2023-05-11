@@ -10,6 +10,7 @@ import com.example.contoso.service.ProductService;
 import com.example.contoso.utils.FileData;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -147,10 +148,19 @@ public class ProductServiceImpl implements ProductService {
                 .forEach(data -> {
                     productRepository.findByCode(data.getCode())
                             .ifPresentOrElse(item -> {
-                                        item.setAmount(item.getAmount() + data.getAmount());
-                                        productRepository.save(item);
+                                        if (item.getCode().equals(data.getCode()) && !item.isActive()) {
+                                            item.setAmount(item.getAmount() + data.getAmount());
+                                            item.setActive(true);
+                                            item.setReservedAmount(0);
+                                            productRepository.save(item);
+                                        } else {
+                                            throw new BusinessException(String.format(ALREADY_EXIST, item.getCode()),
+                                                    HttpStatus.NOT_FOUND);
+                                        }
                                     },
-                                    () -> articles.add(data.getCode())
+                                    () ->{
+                                        articles.add(data.getCode());
+                                    }
                             );
 
                 });
