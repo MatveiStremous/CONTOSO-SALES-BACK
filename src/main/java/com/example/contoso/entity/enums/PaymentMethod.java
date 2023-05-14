@@ -6,8 +6,8 @@ package com.example.contoso.entity.enums;
  * @date 4/28/2023 11:33 PM
  */
 public enum PaymentMethod {
-    CASH("Наличные"),
-    CARD("Карта");
+    CASH("Авансовый"),
+    CARD("По факту");
 
     private final String url;
 
