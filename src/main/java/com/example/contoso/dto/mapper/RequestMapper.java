@@ -52,7 +52,7 @@ public class RequestMapper {
                                     .get();
                             return R.builder()
                                     .reservedAmount(product.getReservedAmount())
-                                    .amount(requestPart.getAmount())
+                                    .amount(product.getAmount())
                                     .pricePerItem(requestPart.getPrice())
                                     .clientAmount(requestPart.getAmount())
                                     .code(product.getCode())
