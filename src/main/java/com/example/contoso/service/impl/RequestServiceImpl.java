@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Neevels
@@ -50,15 +51,22 @@ public class RequestServiceImpl implements RequestService {
     public void addRequest(RequestRequest requestRequest) {
         List<RequestPart> requestLists = requestRequest.getRequestLists()
                 .stream()
+                .collect(Collectors.groupingBy(com.example.contoso.dto.request.request.RequestPart::getProductId, Collectors.mapping(requestPart -> requestPart.getAmount(), Collectors.toList())))
+                .entrySet()
+                .stream()
                 .map(requestRequestList -> {
-                    Optional<Product> product = productRepository.findById(requestRequestList.getProductId());
+                    Optional<Product> product = productRepository.findById(requestRequestList.getKey());
                     if (product.isPresent()) {
                         return RequestPart.builder()
-                                .product(product.get())
-                                .amount(requestRequestList.getAmount())
+                                .name(product.get().getName())
+                                .price(product.get().getPrice())
+//                                .product(product.get())
+                                .amount(requestRequestList.getValue().stream().mapToInt(Integer::intValue ).sum())
+                                .productId(product.get()
+                                        .getId())
                                 .build();
                     } else {
-                        throw new BusinessException(String.format(NOT_FOUND, requestRequestList.getProductId()), HttpStatus.NOT_FOUND);
+                        throw new BusinessException(String.format(NOT_FOUND, requestRequestList.getKey()), HttpStatus.NOT_FOUND);
                     }
 
                 })
@@ -85,8 +93,13 @@ public class RequestServiceImpl implements RequestService {
                                 Product product = productRepository.findById(requestPart.getProductId())
                                         .orElseThrow(() -> new BusinessException(CODE_NOT_FOUND, HttpStatus.NOT_FOUND));
                                 return RequestPart.builder()
+                                        .name(product.getName())
+                                        .price(product.getPrice())
+//                                .product(product.get())
                                         .amount(requestPart.getAmount())
-                                        .product(product)
+//                                        .product(product)
+                                        .productId(product.getId())
+
                                         .build();
                             })
                             .toList();
@@ -142,7 +155,8 @@ public class RequestServiceImpl implements RequestService {
         requestRepository.findById(requestId)
                 .ifPresentOrElse(request -> {
                             if (Objects.equals(status, StatusOfRequest.COMPLETED)) {
-                                mailSender.sendMessage(request.getUser().getLogin(),
+                                mailSender.sendMessage(request.getUser()
+                                                .getLogin(),
                                         "Заявка успешно подтверждена",
                                         "Дорогой менеджер, поздравляем! Заявка с номером "
                                                 + request.getId()
@@ -155,7 +169,8 @@ public class RequestServiceImpl implements RequestService {
                                             /**
                                              * Manipulation with data before creating order
                                              */
-                                            Product product = requestPart.getProduct();
+                                            Product product = productRepository.findById(requestPart.getProductId())
+                                                    .get();
                                             if (product.getAmount() - requestPart.getAmount() >= 0) {
                                                 product.setReservedAmount(requestPart.getAmount() + product.getReservedAmount());
                                                 productRepository.save(product);
@@ -165,7 +180,8 @@ public class RequestServiceImpl implements RequestService {
                                             }
                                         });
 
-                                Integer discount = discountService.getDiscount(request.getClient().getId());
+                                Integer discount = discountService.getDiscount(request.getClient()
+                                        .getId());
                                 Double price = getPrice(request);
                                 Double finalPrice = getFinalPrice(discount, price);
                                 order.setFinalPrice(finalPrice);
@@ -195,7 +211,7 @@ public class RequestServiceImpl implements RequestService {
 
     private void fillMessage(Request request, Double finalPrice, Integer discount, Double price) {
         mailSender.sendOrderInformationToClient(request.getClient()
-                .getEmail(),
+                        .getEmail(),
                 "Заказ",
                 "Благодарим вас за сделанный вами заказ. Оставайтесь с нами",
                 getMailResponses(request),
@@ -206,13 +222,13 @@ public class RequestServiceImpl implements RequestService {
         );
     }
 
-    private  List<MailResponse> getMailResponses(Request request) {
+    private List<MailResponse> getMailResponses(Request request) {
         return request.getListRequest()
                 .stream()
                 .map(requestPart -> MailResponse.builder()
                         .productAmount(requestPart.getAmount())
-                        .productName(requestPart.getProduct().getName())
-                        .price(requestPart.getAmount() * requestPart.getProduct().getPrice())
+                        .productName(requestPart.getName())
+                        .price(requestPart.getAmount() * requestPart.getPrice())
                         .build())
                 .toList();
     }
@@ -224,7 +240,7 @@ public class RequestServiceImpl implements RequestService {
     private Double getPrice(Request request) {
         return request.getListRequest()
                 .stream()
-                .mapToDouble(requestPart -> requestPart.getAmount() * requestPart.getProduct().getPrice())
+                .mapToDouble(requestPart -> requestPart.getAmount() * requestPart.getPrice())
                 .sum();
     }
 

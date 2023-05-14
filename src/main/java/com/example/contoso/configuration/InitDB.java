@@ -66,7 +66,7 @@
 //
 //        List<Product> products = List.of(Product.builder()
 //                        .price(5.0)
-//                        .code(123456)
+//                        .code("123456")
 //                        .amount(10)
 //                        .reservedAmount(0)
 //                        .name("Ластик")
@@ -74,7 +74,7 @@
 //                        .build(),
 //                Product.builder()
 //                        .price(12.0)
-//                        .code(123455)
+//                        .code("123455")
 //                        .amount(20)
 //                        .isActive(true)
 //                        .reservedAmount(0)
@@ -82,7 +82,7 @@
 //                        .build(),
 //                Product.builder()
 //                        .price(6.0)
-//                        .code(123445)
+//                        .code("123445")
 //                        .isActive(true)
 //                        .amount(10)
 //                        .reservedAmount(0)
@@ -90,7 +90,7 @@
 //                        .build(),
 //                Product.builder()
 //                        .price(5.0)
-//                        .code(654321)
+//                        .code("654321")
 //                        .isActive(true)
 //                        .amount(10)
 //                        .reservedAmount(0)
@@ -98,7 +98,7 @@
 //                        .build(),
 //                Product.builder()
 //                        .price(140.0)
-//                        .code(11111)
+//                        .code("11111")
 //                        .isActive(true)
 //                        .amount(40)
 //                        .reservedAmount(0)

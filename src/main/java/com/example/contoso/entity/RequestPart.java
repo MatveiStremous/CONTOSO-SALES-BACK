@@ -17,8 +17,11 @@ import lombok.*;
 @Setter
 public class RequestPart {
     private Integer amount;
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
+    private String name;
+    private Double price;
+    private Integer productId;
+//    @ManyToOne
+//    @JoinColumn(name = "product_id")
+//    private Product product;
 
 }

@@ -49,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
                                         + " успешно выполнен!");
                         order.getListRequest()
                                 .forEach(requestPart -> {
-                                    Product product = requestPart.getProduct();
+                                    Product product =  productRepository.findById(requestPart.getProductId()).get();
                                     int amountOfOrder = requestPart.getAmount();
                                     int reservedAmount = product.getReservedAmount();
                                     int amount = product.getAmount();
@@ -64,7 +64,7 @@ public class OrderServiceImpl implements OrderService {
                     } else {
                         order.getListRequest()
                                 .forEach(requestPart -> {
-                                    Product product = requestPart.getProduct();
+                                    Product product =  productRepository.findById(requestPart.getProductId()).get();
                                     int amountOfOrder = requestPart.getAmount();
                                     int reservedAmount = product.getReservedAmount();
                                     product.setReservedAmount(reservedAmount - amountOfOrder);
@@ -92,7 +92,7 @@ public class OrderServiceImpl implements OrderService {
                 .ifPresentOrElse(order -> {
                     order.getListRequest()
                             .forEach(requestPart -> {
-                                Product product = requestPart.getProduct();
+                                Product product =  productRepository.findById(requestPart.getProductId()).get();
                                 int amountOfOrder = requestPart.getAmount();
                                 int reservedAmount = product.getReservedAmount();
                                 product.setReservedAmount(reservedAmount - amountOfOrder);

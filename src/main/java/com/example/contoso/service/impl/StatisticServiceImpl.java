@@ -8,6 +8,7 @@ import com.example.contoso.entity.Order;
 import com.example.contoso.entity.enums.OrderStatus;
 import com.example.contoso.exception.type.BusinessException;
 import com.example.contoso.repository.OrderRepository;
+import com.example.contoso.repository.ProductRepository;
 import com.example.contoso.service.StatisticService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
 public class StatisticServiceImpl implements StatisticService {
 
     private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
 
     @Override
     public List<ProfitResponse> getProfitFor(LocalDate from, LocalDate to) {
@@ -95,7 +97,7 @@ public class StatisticServiceImpl implements StatisticService {
                 .map(Order::getListRequest)
                 .map(requestParts -> requestParts
                         .stream()
-                        .collect(Collectors.groupingBy(requestPart -> requestPart.getProduct().getName(), Collectors.counting()))
+                        .collect(Collectors.groupingBy(requestPart -> productRepository.findById(requestPart.getProductId()).get().getName(), Collectors.counting()))
                         .entrySet()
                         .stream()
                         .map(stringLongEntry -> MostPopularItemResponse.builder()
