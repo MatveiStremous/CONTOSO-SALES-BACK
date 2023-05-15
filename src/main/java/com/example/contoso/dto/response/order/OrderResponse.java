@@ -18,6 +18,7 @@ public record OrderResponse(
         String paymentMethod,
         String status,
         String clientEmail,
+        Integer clientDiscount,
         String userFullName,
         List<R> rList,
         String note,

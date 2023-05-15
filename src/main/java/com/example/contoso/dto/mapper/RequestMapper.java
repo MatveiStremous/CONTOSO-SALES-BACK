@@ -39,6 +39,7 @@ public class RequestMapper {
         return RequestResponse.builder()
                 .requestId(request.getId())
                 .clientEmail(request.getClient().getEmail())
+                .clientDiscount(request.getClient().getDiscount().getDiscountType())
                 .status(request.getStatus().getUrl())
                 .dateTime(request.getTime())
                 .dateOfDelivery(request.getDateOfDelivery())

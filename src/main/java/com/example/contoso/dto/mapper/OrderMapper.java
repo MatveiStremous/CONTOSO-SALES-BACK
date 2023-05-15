@@ -30,12 +30,15 @@ public class OrderMapper {
                         .getSurname())
                 .clientEmail(order.getClient()
                         .getEmail())
+                .clientDiscount(order.getClient()
+                        .getDiscount()
+                        .getDiscountType())
                 .finalPrice(order.getFinalPrice())
                 .rList(order.getListRequest()
                         .stream()
                         .map(requestPart -> {
-                            Product product = productRepository.findById(requestPart.getProductId()).get();
-                            return R.builder()
+                                    Product product = productRepository.findById(requestPart.getProductId()).get();
+                                    return R.builder()
                                             .reservedAmount(product.getReservedAmount())
                                             .amount(product.getAmount())
                                             .pricePerItem(product.getPrice())

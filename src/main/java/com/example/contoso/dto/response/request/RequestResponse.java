@@ -24,6 +24,7 @@ import java.util.List;
 public class RequestResponse {
     Integer requestId;
     String clientEmail;
+    Integer clientDiscount;
     @JsonFormat(pattern="dd.MM.yyyy")
     LocalDate dateTime;
     @JsonFormat(pattern="dd.MM.yyyy")
